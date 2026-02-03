@@ -1,0 +1,33 @@
+# --- secrets ---
+.env
+.env.*
+!.env.example
+
+# --- OS ---
+.DS_Store
+
+# --- dependencies ---
+node_modules/
+
+# --- build / cache ---
+dist/
+cache/
+cache-zk/
+artifacts/
+artifacts-zk/
+tmp/
+
+# --- hardhat / deployments outputs ---
+deployments/
+deployments-zk/
+
+# --- logs / outputs ---
+output/
+file_logs/
+*.log
+
+# --- optional local tooling ---
+.zenflow/
+.zencoder/
+.zenflow
+.zencoder

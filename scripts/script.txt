@@ -1,0 +1,115 @@
+พร้อม โค้ดเต็มทุกไฟล์ + คำสั่ง run + ไฟล์ output ที่ได้จากแต่ละขั้น
+
+หมายเหตุ: ชุดนี้อิง flow บน Ethereum RPC (ethers v6) เหมือน benchmark_NFTCowCert_ETH.ts ของคุณ
+
+0) เตรียมโปรเจกต์ก่อน (ทำครั้งเดียว)
+0.1 ติดตั้งแพ็กเกจ
+npm i ethers dotenv
+npm i -D ts-node typescript @types/node
+
+0.2 เตรียมไฟล์ .env
+
+สร้าง .env ที่ root โปรเจกต์:
+
+ETH_RPC=https://YOUR_RPC_URL
+PRIVATE_KEY=0xYOUR_PRIVATE_KEY
+ETH_CONTRACT_TEST=0xYOUR_NFTCOWCERTV2_CONTRACT
+
+# mint จะ mint ไปที่ address นี้ (ถ้าไม่ใส่ จะใช้ signer.address)
+MINT_TO=0xRECIPIENT_ADDRESS
+
+# transfer จะโอนจาก MINT_TO -> TRANSFER_TO (ถ้าไม่ใส่ TRANSFER_TO จะใช้ signer.address)
+TRANSFER_TO=0xTARGET_ADDRESS
+
+0.3 ตรวจไฟล์ที่ต้องมี
+
+./output/cid_list.json ✅ (มาจากขั้น IPFS)
+
+./artifacts/contracts/NFTCowCert_v2.sol/NFTCowCert.json ✅ (ABI)
+
+รูปแบบไฟล์ output ของแต่ละขั้น
+
+ทุกสคริปต์จะเขียนไฟล์ลง ./output/:
+
+01_mint_results.json
+
+02_transfer_results.json
+
+03_block_results.json
+
+04_unblock_results.json
+
+05_fetch_results.json
+
+และมี failed_*.json แยกไว้ด้วย เพื่อเอาไปวิเคราะห์/ทำซ้ำภายหลัง
+
+01_mint.ts (Mint/Issue Certificates จาก cid_list.json)
+
+✅ ทำอะไร:
+
+อ่าน output/cid_list.json
+
+เรียก issueCert(to, cid, cowId, cowHash)
+
+parse Transfer(0x0, to, tokenId) เพื่อเอา tokenId จริง
+
+ถ้ารายการใด fail จะไม่หยุด และ log สาเหตุไว้
+
+📄 สร้างไฟล์ 01_mint.ts:
+npx ts-node 01_mint.ts
+
+02_transfer.ts (Transfer เฉพาะรายการที่ mint สำเร็จ)
+
+✅ ทำอะไร:
+
+อ่าน output/01_mint_results.json
+
+เลือกเฉพาะ status="success" และมี tokenId
+
+โอน safeTransferFrom(MINT_TO -> TRANSFER_TO, tokenId)
+
+fail ใบไหนไม่หยุด + log แยก
+
+📄 สร้างไฟล์ 02_transfer.ts:
+npx ts-node 02_transfer.ts
+
+03_block.ts (Block เฉพาะ token ที่ mint สำเร็จ)
+
+✅ ทำอะไร:
+
+อ่าน 01_mint_results.json
+
+สำหรับ tokenId ที่สำเร็จ → เรียก blockCert(tokenId)
+
+📄 สร้างไฟล์ 03_block.ts:
+npx ts-node 03_block.ts
+
+
+04_unblock.ts (Unblock เฉพาะ token ที่ mint สำเร็จ)
+
+📄 สร้างไฟล์ 04_unblock.ts:
+npx ts-node 04_unblock.ts
+
+
+05_fetch.ts (อ่านข้อมูล certs(tokenId) เพื่อเก็บผล read latency)
+
+✅ ทำอะไร:
+
+อ่าน 01_mint_results.json
+
+เรียก certs(tokenId) แล้วบันทึก metadataCID, isBlocked, id
+
+📄 สร้างไฟล์ 05_fetch.ts:
+npx ts-node 05_fetch.ts
+
+สรุปลำดับการใช้งาน (จำง่ายมาก)
+
+npx ts-node 01_mint.ts → ได้ tokenId + log fail
+
+npx ts-node 02_transfer.ts → โอนได้/ไม่ได้แยก log
+
+npx ts-node 03_block.ts
+
+npx ts-node 04_unblock.ts
+
+npx ts-node 05_fetch.ts → อ่านข้อมูลเพื่อวัด read latency
