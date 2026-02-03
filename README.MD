@@ -1,54 +1,74 @@
-### 4. Experimental Results and Analysis
+````md
+# NFTCowCert V2
 
-#### 4.1 Setup
-- Smart contract: BenchmarkToken (ERC-20 compatible)
-- Deployed on: zkSync Era Testnet / Optimism / Ethereum L1
-- Transaction types: `mint`, `transfer`, `balanceOf`
-- Number of test iterations: 30 rounds per function per chain
-- Tools: Hardhat, zksync-ethers, performance script with timing + gas metrics
+NFTCowCert V2 is a research prototype for evaluating blockchain-based certificate systems on Ethereum Layer-2.  
+This repository provides smart contracts and scripts used to benchmark transaction cost and latency, and to deploy NFT-based livestock pedigree certificates with IPFS-anchored metadata.
 
-#### 4.2 Result Table
-See Table 1 for detailed gas and latency comparison.
+---
 
-| Chain        | Function | Avg Gas Used | Avg Time (sec) | Gas Cost (ETH) |
-|--------------|----------|---------------|----------------|----------------|
-| zkSync       | Mint     | xxx           | xxx            | xxx            |
-| Ethereum L1  | Mint     | xxx           | xxx            | xxx            |
-| Optimism     | Mint     | xxx           | xxx            | xxx            |
+## Supported Networks
+- **Ethereum Sepolia (Layer-1)**
+- **zkSync Era Testnet (Layer-2)**
 
-#### 4.3 Interpretation
-- L2 chains (zkSync, Optimism) demonstrated lower gas usage and execution time.
-- Ethereum L1 showed significantly higher gas cost.
-- Result variations were observed based on network congestion and block interval.
-- zkSync was slightly faster but Optimism had more predictable timing.
+---
 
-#### 4.4 Conclusion
-The results show that L2 solutions significantly reduce transaction cost and latency for standard ERC20 operations. zkSync provides efficiency through zero-knowledge proofs while Optimism offers predictable execution with optimistic rollup technology.
+## Contents
+- **BenchmarkToken** (ERC-20 compatible) for baseline performance testing
+- **NFTCowCert V2** smart contracts for certificate issuance
+- Benchmark scripts for gas usage and transaction latency measurement
+- Utilities for uploading certificate metadata to IPFS using Web3.Storage
 
+---
 
+## Quick Start
 
-🧠 อธิบายการทำงาน
-อ่านไฟล์ input: อ่าน brahman_certificates_30.json ซึ่งควรเป็น array ของ metadata JSON objects
+### Install Dependencies
+```bash
+npm install
+````
 
-สร้าง Web3.Storage client: ใช้ API token จาก .env เพื่อเชื่อมต่อ
+### Upload Certificate Metadata to IPFS
 
-วนลูปทีละรายการ:
+```bash
+npx tsx scripts/uploadToIPFS.ts
+```
 
-สร้างไฟล์ .json สำหรับวัวแต่ละตัวลงใน ./tmp
+### Deploy NFTCowCert V2 Contract (zkSync Era)
 
-อัปโหลดไฟล์นั้นเข้า IPFS ผ่าน Web3.Storage
-
-จด CID พร้อม cowId
-
-บันทึกผล: สร้าง cid_list.json สำหรับนำไปใช้ตอน mint NFT
-
-แสดงผล: log ความสำเร็จบน console
-
-✅ วิธีรัน
-`npx tsx scripts/uploadToIPFS.ts`
-หรือถ้าใช้ TypeScript ผ่าน ts-node:
-`npx ts-node scripts/uploadToIPFS.ts`
-
-
-run script Test code Terminal
+```bash
 npx hardhat run --network zkSyncTestnet deploy/deploy_NFTCowCer_v2.ts
+```
+
+### Run Benchmark Scripts
+
+```bash
+npx hardhat run --network zkSyncTestnet scripts/<benchmark_script>.ts
+```
+
+---
+
+## Notes
+
+* Benchmarks are executed on public testnets under live network conditions; results may vary due to network congestion and block production intervals.
+* Temporary files, logs, and sensitive configuration files are excluded from version control.
+* This repository serves as the reference implementation for the experimental results reported in the associated research paper.
+
+---
+
+## License
+
+MIT
+
+```
+
+---
+
+### ✅ ยืนยันอีกครั้ง
+- เอาไป **paste ทับ `README.md` ได้เลย**
+- ใช้กับ **public repo ได้จริง**
+- สอดคล้องกับ **paper + ระบบทดสอบปัจจุบัน**
+- ไม่มี Optimism
+- Reviewer / dev / public อ่านแล้วเข้าใจทันที
+
+ถ้าคุณอยากได้ขั้นถัดไป (เช่น `Reproducibility.md`, `CITATION.cff`, หรือ README สำหรับ reviewers โดยเฉพาะ) บอกได้เลยครับ ตอนนี้ repo ของคุณอยู่ในสภาพ “พร้อมโชว์” แล้ว 💪
+```
