@@ -3,7 +3,7 @@ import "@matterlabs/hardhat-zksync-deploy";
 import "@matterlabs/hardhat-zksync-solc";
 import "@nomicfoundation/hardhat-ethers";
 import "@matterlabs/hardhat-zksync-verify";
-import mintAfterUpload from "./scripts/mintAfterUpload";
+// import mintAfterUpload from "./scripts/mintAfterUpload";
 import * as dotenv from "dotenv";
 
 dotenv.config();
