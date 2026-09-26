@@ -1,0 +1,34 @@
+{
+  "name": "zk-benchmark",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@matterlabs/hardhat-zksync-deploy": "^1.7.0",
+    "@matterlabs/hardhat-zksync-solc": "^1.4.0",
+    "@matterlabs/hardhat-zksync-verify": "^1.8.1",
+    "@nomicfoundation/hardhat-chai-matchers": "^2.1.2",
+    "@nomicfoundation/hardhat-ethers": "^3.0.9",
+    "@nomicfoundation/hardhat-toolbox": "^7.0.0",
+    "@openzeppelin/contracts": "^4.9.2",
+    "@types/chai": "^5.2.3",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^25.0.10",
+    "chai": "^4.5.0",
+    "dotenv": "^16.6.1",
+    "ethers": "^6.16.0",
+    "hardhat": "^2.24.3",
+    "mocha": "^12.0.2",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "zksync-ethers": "^6.18.0"
+  }
+}
