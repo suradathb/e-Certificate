@@ -78,10 +78,10 @@ async function main() {
   const results: any[] = [];
   const failed: any[] = [];
 
-  console.log(`🚀 [01_mint] items=${list.length}`);
-  console.log(`👤 signer=${signer.address}`);
-  console.log(`🎯 mintTo=${mintTo}`);
-  console.log(`🔗 contract=${process.env.ZKSYNC_CONTRACT_TEST}`);
+  console.log(`[01_mint] items=${list.length}`);
+  console.log(` signer=${signer.address}`);
+  console.log(` mintTo=${mintTo}`);
+  console.log(` contract=${process.env.ZKSYNC_CONTRACT_TEST}`);
 
   for (let i = 0; i < list.length; i++) {
     const { cowId, cid } = list[i];
@@ -110,7 +110,7 @@ async function main() {
       };
 
       results.push(row);
-      console.log(`✅ minted tokenId=${tokenId ?? "UNKNOWN"} tx=${tx.hash}`);
+      console.log(` minted tokenId=${tokenId ?? "UNKNOWN"} tx=${tx.hash}`);
     } catch (err: any) {
       const end = Date.now();
       const e = extractError(err);
@@ -127,20 +127,20 @@ async function main() {
 
       failed.push(row);
       results.push(row);
-      console.error(`❌ mint failed: ${e.message}`);
+      console.error(` mint failed: ${e.message}`);
     }
 
-    // checkpoint ทุกใบ
+    // checkpoint after each item
     safeWriteJSON(OUT_RESULTS, results);
     safeWriteJSON(OUT_FAIL, failed);
   }
 
-  console.log(`\n🎉 [01_mint] done -> ${OUT_RESULTS}`);
-  console.log(`🧾 failed -> ${OUT_FAIL}`);
+  console.log(`\n [01_mint] done -> ${OUT_RESULTS}`);
+  console.log(` failed -> ${OUT_FAIL}`);
 }
 
 main().catch((e) => {
-  console.error("💥 fatal:", e);
+  console.error(" fatal:", e);
   process.exit(1);
 });
 

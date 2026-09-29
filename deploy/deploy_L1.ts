@@ -15,14 +15,14 @@ async function main() {
 
   console.log("Deploying contract with:", await signer.getAddress());
 
-  // ✅ ส่งแค่ initialOwner (address) เท่านั้น!
+  // pass only initialOwner (address)
   const contract = await factory.deploy(await signer.getAddress());
 
   await contract.waitForDeployment();
 
-  console.log("✅ Contract deployed at:", contract.target);
+  console.log(" Contract deployed at:", contract.target);
 }
 
 main().catch((err) => {
-  console.error("❌ Deployment error:", err);
+  console.error(" Deployment error:", err);
 });

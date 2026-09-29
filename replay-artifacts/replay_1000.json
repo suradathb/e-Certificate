@@ -1,0 +1,28 @@
+{
+  "network": "hardhat",
+  "contractAddress": "0xCD75Ddf910A204d36Fc2f86e776f9d7B97A34817",
+  "blockRange": {
+    "fromBlock": 0,
+    "toBlock": "latest"
+  },
+  "certificateCount": 1000,
+  "eventCount": 4176,
+  "lifecycleOps": 2173,
+  "reconstructed": 1000,
+  "matchCount": 1000,
+  "mismatchCount": 0,
+  "unreconstructibleFields": [],
+  "conformanceRate": 1,
+  "seed": 1042,
+  "operationDistribution": {
+    "transferProb": 0.4,
+    "suspendProb": 0.5,
+    "reinstateGivenSuspendProb": 0.6
+  },
+  "timestamp": "2026-09-26T16:27:39.552Z",
+  "versions": {
+    "node": "v22.22.3",
+    "hardhatNetwork": "hardhat"
+  },
+  "replayTimeMs": 2662
+}

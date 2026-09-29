@@ -57,7 +57,7 @@ async function main() {
   const results: any[] = [];
   const failed: any[] = [];
 
-  console.log(`🚀 [02_transfer] items=${items.length}`);
+  console.log(`[02_transfer] items=${items.length}`);
   console.log(`from(mintTo)=${mintTo}`);
   console.log(`to(transferTo)=${transferTo}`);
 
@@ -89,7 +89,7 @@ async function main() {
       };
 
       results.push(row);
-      console.log(`✅ transfer ok tx=${tx.hash}`);
+      console.log(` transfer ok tx=${tx.hash}`);
     } catch (err: any) {
       const end = Date.now();
       const e = extractError(err);
@@ -108,19 +108,19 @@ async function main() {
 
       failed.push(row);
       results.push(row);
-      console.error(`❌ transfer failed: ${e.message}`);
+      console.error(` transfer failed: ${e.message}`);
     }
 
     safeWriteJSON(OUT_RESULTS, results);
     safeWriteJSON(OUT_FAIL, failed);
   }
 
-  console.log(`\n🎉 [02_transfer] done -> ${OUT_RESULTS}`);
-  console.log(`🧾 failed -> ${OUT_FAIL}`);
+  console.log(`\n [02_transfer] done -> ${OUT_RESULTS}`);
+  console.log(` failed -> ${OUT_FAIL}`);
 }
 
 main().catch((e) => {
-  console.error("💥 fatal:", e);
+  console.error(" fatal:", e);
   process.exit(1);
 });
 

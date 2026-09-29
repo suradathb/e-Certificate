@@ -1,0 +1,559 @@
+%% 
+%%
+\documentclass[pdflatex,sn-mathphys-num]{sn-jnl}
+
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{xurl}
+\usepackage{seqsplit}
+\usepackage{float}
+
+\graphicspath{{figures/}{images/}{figs/}}
+
+\raggedbottom
+
+\begin{document}
+
+\title[A Scalable Distributed Certification Framework Leveraging Layer-2 Rollups]{A Scalable Distributed Certification Framework Leveraging Layer-2 Rollups: Architecture Design and Performance Evaluation}
+
+\author*[1]{\fnm{Akara} \sur{Prayote}}\email{akara.p@sci.kmutnb.ac.th}
+
+\author[1]{\fnm{Suradath} \sur{Bangnikrai}}
+
+\author[1]{\fnm{Luepol} \sur{Pipanmekaporn}}
+
+\author[2]{\fnm{Wilaiporn} \sur{Lee}}
+
+\author[2]{\fnm{Kanabadee} \sur{Srisomboon}}
+
+\affil[1]{\orgdiv{Department of Computer and Information Science},
+\orgname{King Mongkut's University of Technology North Bangkok},
+\city{Bangkok},
+\postcode{10800},
+\country{Thailand}}
+
+\affil[2]{\orgdiv{Department of Electrical and Computer Engineering},
+\orgname{King Mongkut's University of Technology North Bangkok},
+\city{Bangkok},
+\postcode{10800},
+\country{Thailand}}
+
+
+% --- CRediT (optional; keep as placeholder if not finalized) ---
+% \credit{(Fill CRediT taxonomy if required by the journal submission system.)}
+\abstract{Distributed certification systems offer transparency, immutability, and verifiability in digital credential management, but large-scale deployment remains limited by cost, latency, and scalability constraints of Layer-1 blockchains.
+
+This paper proposes a lifecycle-aware certification framework in which certificates are modeled as explicit state transitions governed by verifiable on-chain events. The framework adopts a layered design separating semantics, policy enforcement, execution, and off-chain verification, providing a domain-extensible architecture while preserving lifecycle correctness. The architecture is instantiated and empirically evaluated using a livestock pedigree case study; applicability to other certificate domains is architectural and is not claimed as an experimental result.
+
+To validate the approach, NFTCowCert V2 is implemented on the zkSync validity-rollup network and evaluated under workloads of up to 1,000 transactions per batch. Experimental results demonstrate low and stable confirmation latency, with state-changing operations requiring approximately 2--3 seconds per transaction, while metadata fetch remains sub-second. The system further achieves 95--99\% cost reduction compared to Ethereum Layer-1 and sustains application-level throughput exceeding 2,000 TPS under the evaluated conditions.
+
+These results indicate that performance gains are driven by execution-layer decoupling, where latency and cost remain stable under increasing workloads. The study contributes (i) a lifecycle-aware architectural model for decentralized certification and (ii) an empirical methodology for analyzing Layer-2 performance.}
+
+\keywords{Blockchain, Layer-2 rollups, Smart contracts, Decentralized certification, Performance evaluation}
+
+\maketitle
+
+\section{Introduction}
+\label{sec:introduction}
+The rapid digitization of credentials, certificates, and licenses across domains such as education, healthcare, supply chain management, and professional licensing has created a growing demand for secure, verifiable, and trustworthy electronic certification systems. Conventional e-certificate infrastructures remain predominantly centralized, relying on institutional authorities for issuance, validation, and long-term storage. While functional, such systems are increasingly exposed to fraud, forgery, duplication, and administrative inefficiencies. Moreover, their limited interoperability across institutions and jurisdictions restricts their effectiveness in an increasingly globalized digital ecosystem. Blockchain technology has emerged as a promising alternative by offering immutability, transparency, and decentralized verification, thereby addressing several structural weaknesses of traditional e-certificate systems.
+
+Despite these advantages, blockchain-based certification systems face practical challenges that extend beyond simple data immutability. Certificates are not static digital objects; rather, they evolve through a lifecycle encompassing issuance, validation, transfer, renewal, expiration, and revocation. A practical blockchain-based e-certificate system must therefore satisfy several core requirements. Immutability ensures resistance to tampering after issuance, while verifiability enables independent validation without reliance on centralized authorities. Identity binding is essential to securely associate certificates with issuers and holders, preventing misuse or impersonation. Lifecycle management mechanisms must transparently reflect real-world state changes, such as revocation or suspension. Finally, interoperability is critical to ensure that certificates remain usable across platforms, organizations, and regulatory boundaries. These requirements collectively define the design space of a robust blockchain-based certification framework.
+
+The need for trustworthy digital certification arises across many application areas. In education, blockchain-based certificates can protect academic credentials and enable instant verification by employers or institutions. In professional licensing, certifications in medicine, engineering, and law can be managed transparently and verified globally. Supply chain certification systems can leverage blockchain to track provenance and compliance of agricultural or high-value goods. In healthcare, digital certificates can support vaccination records, laboratory results, and health passes while preserving data integrity. Environmental and sustainability initiatives, such as carbon credit certification, further demonstrate the need for scalable and trustworthy digital certification infrastructures. These diverse scenarios motivate a certification framework whose architecture is extensible across domains and scalable under real-world workloads, while noting that the present study evaluates only the livestock pedigree case.
+
+Prior research has demonstrated the feasibility of blockchain-based certificates but often relies on Layer-1 (L1) platforms such as Ethereum, where high transaction fees, limited throughput, and latency constraints impede large-scale adoption. Recent studies emphasize scalability and interoperability challenges but frequently lack standardized evaluation methodologies, making cross-study comparison difficult. In particular, few works present a unified certification framework that decouples domain-specific logic from blockchain infrastructure while reporting reproducible performance metrics under controlled workloads.
+
+In this work, we introduce NFTCowCert V2, a Layer-2-based framework for scalable blockchain e-certification. The framework is architecturally designed to be domain-extensible, and is empirically instantiated and evaluated through a livestock pedigree certification case study. Livestock certification is selected as a representative use case due to its stringent integrity requirements, long-lived records, and sensitivity to ownership and lifecycle changes. Importantly, livestock pedigree serves as the empirical validation context of this study; applicability to other certification domains is presented as an architectural extension rather than an experimentally validated result. The system architecture separates domain-specific certificate semantics from the underlying blockchain execution layer, which is intended to permit domain-specific adaptation while retaining the same semantic-to-execution structure.
+
+NFTCowCert V2 is implemented on the zkSync validity-rollup environment and evaluated under controlled workloads using standardized and reproducible benchmarks. Experimental results demonstrate low and stable confirmation latency, with state-changing operations completing in approximately 2--3 seconds and metadata fetch operations remaining in the sub-second range, sustained application-level throughput exceeding 2{,}000 transactions per second, and approximately 95--99\% reduction in certificate issuance cost compared to Ethereum Layer-1, depending on workload conditions. Performance is reported using consistent indicators, including transaction throughput, latency distributions, and per-certificate cost, providing a reproducible baseline for future blockchain e-certificate research.
+
+By framing NFTCowCert V2 as a Layer-2-based certification framework instantiated and evaluated through a livestock pedigree case study, this work contributes in three key aspects. First, it demonstrates a lifecycle-aware design that satisfies fundamental certification requirements, including immutability, verifiability, identity binding, and interoperability. Second, it shows how Layer-2 architectures directly address scalability and cost-efficiency limitations inherent in Layer-1 deployments. Third, it establishes a standardized performance evaluation methodology that enables fair comparison across blockchain-based certification systems. Together, these contributions bridge the gap between conceptual blockchain certification models and a practical, empirically evaluated Layer-2 deployment, demonstrated here for the livestock pedigree domain.
+
+Unlike prior works that primarily migrate certificate issuance logic onto blockchain infrastructures, this study formalizes lifecycle modeling as an execution-layer-independent abstraction, enabling principled reasoning about correctness and scalability across heterogeneous blockchain environments.
+
+\section{Related Work}
+Blockchain technology has increasingly been adopted in certification systems for its ability to provide transparency, immutability, and decentralized trust. These properties are particularly important in agriculture and livestock pedigree management, where fraudulent claims and tampering with lineage records have historically caused economic and reputational damages~\cite{cheng2018blockchain,hawashin2024blockchain}. Several studies have demonstrated blockchain’s potential to address these issues across diverse domains.
+
+An early implementation by Suradath and Akara~\cite{bangnikrai2022blockchain} proposed NFTCowCertV1, which leveraged Ethereum’s ERC-721 standard and IPFS to issue tamper-proof digital pedigree certificates for Brahman cattle. The system architecture (Fig.~\ref{fig:v1-architecture}) comprised a frontend web interface, a backend API layer, and Ethereum smart contracts, enabling farmers to register livestock data, mint NFTs, and allow verification of authenticity directly on-chain. Fig.~\ref{fig:v1-workflow} illustrates the workflow from data registration to certificate issuance and transfer.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.9\columnwidth]{fig1.png}
+\caption{System architecture of NFTCowCert V1.}
+\label{fig:v1-architecture}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=1\columnwidth]{fig2.png}
+\caption{Workflow of NFTCowCert V1.}
+\label{fig:v1-workflow}
+\end{figure}
+
+Fig.~\ref{fig:v1-architecture} illustrates the architecture of  NFTCowCerV1, comprising a frontend web application, a backend API layer, and Ethereum smart contracts. Fig.~\ref{fig:v1-workflow} shows the operational workflow where farmers could register cattle data, mint NFTs, and allow buyers to verify authenticity directly on the blockchain. 
+
+While NFTCowCertV1 demonstrated proof-of-concept feasibility, real-world deployments exposed critical limitations. High gas fees on Ethereum Mainnet (\$50$ -\$200$ per transaction during network congestion), slow confirmation times (ranging from 15 seconds to several minutes), and limited transaction throughput posed significant challenges for scaling in resource-constrained environments such as rural farming communities.
+
+Beyond livestock certification, other researchers have explored blockchain-based certification frameworks in academic and commercial sectors. Srivastava et al.~\cite{cheng2018blockchain} proposed SmartCert, an Ethereum-based framework enabling educational institutions to issue verifiable digital credentials. Singh and Yadav~\cite{hawashin2024blockchain} introduced NFTCert, which integrates NFT-based credentials with online payments for e-commerce transactions. Poojitha et al.~\cite{poornima2024academic} presented a decentralized platform where students can manage and share their academic achievements as NFTs. These systems reinforce the advantages of decentralization and traceability but are similarly bound by Layer-1 (L1) scalability bottlenecks.
+
+Recent efforts have explored the potential of L2 solutions beyond DeFi and payment systems. For instance, Polygon zkEVM has been proposed for decentralized identity and supply chain systems due to its high compatibility with Ethereum and reduced gas costs \cite{polygon2024zkEVM}. Similarly, StarkNet has shown promise in scalable NFT applications with built-in proof verification and data compression \cite{starkware2024starknet}. While these platforms support general smart contract execution with improved scalability, few studies have applied them specifically to certification systems, particularly in agricultural or carbon-credit contexts.
+
+Additionally, conceptual frameworks have been proposed for using L2 blockchain systems in carbon credit issuance and tracking. These studies emphasize the importance of tamper-proof data, cross-organizational verification, and cost-efficiency, aligning closely with the objectives of our proposed system \cite{merlo2025carbon,saraji2021carbon}. However, empirical benchmarks comparing L1 and L2 in certification use cases remain rare, which this paper addresses.
+
+To mitigate L1 limitations, Layer-2 (L2) scaling solutions such as ZK-Rollups have gained prominence. Protocols like zkSync, Polygon zkEVM, and StarkNet batch thousands of off-chain transactions and submit succinct cryptographic proofs (zk-SNARKs or zk-STARKs) to Ethereum for finality~\cite{gupta2022zkp,zksync2022whitepaper}. These approaches achieve up to 2000 transactions per second (TPS) with significant gas cost reduction, making them suitable for high-frequency applications~\cite{zksyncdocs2024}. While most L2 deployments have been concentrated in decentralized finance (DeFi) and payment systems, their adoption in certificate issuance remains limited.
+
+In addition to public blockchains, permissioned blockchain platforms such as Hyperledger and decentralized identity (DID) systems have been applied in digital credential management. These systems emphasize access control, organizational trust, and privacy, particularly in academic and enterprise environments. However, they often require centralized endorsement mechanisms and lack interoperability with the broader Web3 ecosystem.
+
+Prior works primarily focus on Layer-1 and permissioned blockchain-based certification systems, but lack real-world performance evaluation on Layer-2 platforms. To the best of our knowledge, this is the first work to design and empirically benchmark an NFT-based certification system using zkSync Era for agricultural pedigree management.
+
+This gap in practical implementations defines a clear research opportunity. To date, no study has empirically benchmarked NFT-based certification systems across L1 and L2 environments. Our work addresses this by introducing NFTCowCertV2, a redesigned architecture leveraging zkSync’s ZK-Rollup to overcome L1 constraints. We present comparative evaluations of minting, ownership transfers, and metadata retrieval between the L1 and L2 deployments, contributing empirical evidence to the blockchain certification literature.
+
+%\FloatBarrier
+\section{Lifecycle-Aware E-Certificate Framework}
+
+This section presents a formally defined, lifecycle-centric, and execution-layer-decoupled architectural framework for scalable, verifiable, and auditable blockchain-based e-certificate systems. At the level of architectural design, the framework's lifecycle abstraction is defined independently of any particular application domain, blockchain platform, or deployment environment, and is positioned as a reference architectural model for decentralized certificate management. This domain independence is an architectural property of the abstraction; empirical evaluation in this study is confined to the livestock pedigree case study.
+
+\subsection{Formal Lifecycle State Model}
+
+A certificate is formally modeled as a tuple:
+\[
+C = (id, issuer, subject, state, metadataHash)
+\]
+where:
+\begin{itemize}
+    \item $id \in \mathbb{I}$ uniquely identifies the certificate,
+    \item $issuer \in \mathbb{U}$ denotes the issuing authority,
+    \item $subject \in \mathbb{U}$ represents the certificate holder,
+    \item $state \in S$ is the lifecycle state,
+    \item $metadataHash \in \mathbb{H}$ references content-addressed metadata.
+\end{itemize}
+
+The lifecycle state space is defined as:
+\[
+S = \{\textit{Active}, \textit{Suspended}\}
+\]
+together with a pre-existence condition $\bot$ denoting a certificate that has not yet been created. Let $A = \{\textit{issue}, \textit{transfer}, \textit{suspend}, \textit{reinstate}\}$ denote the set of evaluated lifecycle actions. The lifecycle evolution is governed by a transition function:
+\[
+\delta : S_{\bot} \times A \rightarrow S, \qquad S_{\bot} = S \cup \{\bot\}
+\]
+where $\bot \notin S$ is the pre-existence condition used only as the source of the creation transition. The transition function is subject to the following validity constraints:
+
+\begin{enumerate}
+    \item $\textit{issue}$ is valid only if the certificate does not previously exist.
+    \item $\textit{transfer}$ is valid only if $state = \textit{Active}$; it changes ownership while the lifecycle state remains \textit{Active}.
+    \item $\textit{suspend}$ moves a certificate from \textit{Active} to \textit{Suspended}, temporarily disabling transfer.
+    \item $\textit{reinstate}$ moves a certificate from \textit{Suspended} back to \textit{Active}.
+\end{enumerate}
+
+A read-only query operation, \textit{fetch}, is used to inspect certificate state but is not a lifecycle transition and therefore does not belong to $A$. Permanent \textit{revocation} (a terminal \textit{Revoked} state) is defined only as a framework extension and is \emph{not} implemented or evaluated in the present prototype.
+
+By explicitly formalizing lifecycle transitions as a state machine, the framework enables systematic reasoning about certificate validity, ownership continuity, and temporal state evolution independent of blockchain-specific implementation details.
+
+\begin{figure}[!htbp]
+\centering
+% REVISION NOTE (revision-jos-2026): img03.png must be redrawn to show the evaluated
+% state machine: pre-existence -> issue -> Active, Active <-> Suspended (suspend/reinstate),
+% Active -> Active (transfer). No terminal Revoked state (framework extension only).
+\includegraphics[width=1\columnwidth]{img03.png}
+\caption{Formal lifecycle state machine of the evaluated prototype: \textit{issue} creates a certificate in the \textit{Active} state, \textit{transfer} preserves \textit{Active} while changing ownership, and \textit{suspend}/\textit{reinstate} move between \textit{Active} and \textit{Suspended}. Permanent revocation is a framework extension and is not evaluated.}
+\label{fig3}
+\end{figure}
+
+\subsection{Layered Architectural Decomposition}
+
+To ensure portability across heterogeneous blockchain infrastructures, the framework adopts an explicit separation-of-concerns model. The system architecture is represented as:
+\[
+F = (L_{semantic}, L_{policy}, L_{execution}, L_{offchain})
+\]
+where:
+\begin{itemize}
+    \item $L_{semantic}$ defines the domain-independent certificate schema (an abstraction-level property),
+    \item $L_{policy}$ specifies lifecycle transition rules governed by $\delta$,
+    \item $L_{execution}$ represents blockchain-based persistence and event emission,
+    \item $L_{offchain}$ reconstructs certificate state through deterministic replay of on-chain events.
+\end{itemize}
+
+This separation ensures that lifecycle correctness is invariant under changes in execution infrastructure.
+
+
+\subsection{Verification Complexity Analysis}
+
+The architectural distinction between Layer-1 execution and validity-rollup-based Layer-2 execution has asymptotic implications for verification cost.
+
+On Layer-1, each transaction is independently validated through global consensus, yielding verification cost proportional to the number of transactions:
+\[
+C_{L1} = \mathcal{O}(n)
+\]
+where $n$ denotes the number of lifecycle operations.
+
+In contrast, under a validity-rollup architecture, $n$ transactions are aggregated into a single succinct cryptographic proof $\pi$ that is verified once on Layer~1. This yields an amortized on-chain verification complexity that is asymptotically constant with respect to the number of transactions per batch:
+\[
+C_{L2} = \mathcal{O}(1) \quad \text{(amortized per batch)}
+\]
+While execution complexity remains $\mathcal{O}(n)$ off-chain, the on-chain verification overhead is asymptotically constant.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=1\columnwidth]{img04.png}
+\caption{Layered architectural decomposition of the framework.}
+\label{fig4}
+\end{figure}
+
+It is important to distinguish between on-chain verification complexity and off-chain proof generation complexity. 
+In validity-rollup architectures, proof construction remains dependent on batch size and underlying cryptographic circuits, typically exhibiting execution complexity proportional to the number of aggregated transactions. However, this computational overhead is confined to the off-chain execution environment and does not increase Layer~1 verification cost. 
+
+Consequently, the architectural advantage of validity rollups lies in amortizing on-chain verification into a constant-time proof verification step, while relocating linear execution cost to an off-chain domain with higher computational scalability.
+
+
+
+\subsection{Execution-Layer Independence}
+
+The lifecycle abstraction is defined independently of blockchain-specific parameters such as gas pricing, block interval, consensus mechanism, or data availability strategy.
+
+Rather than an abstract mapping, we instantiate the binding function $\phi$ operationally so that each semantic lifecycle action is bound to a concrete execution-layer realization:
+\[
+\phi(a, c, \alpha, \kappa) \rightarrow (g, f, e, s')
+\]
+where $a \in A$ is a lifecycle action, $c$ a certificate, $\alpha$ the actor, and $\kappa$ the action context; $g$ is the on-chain guard, $f$ the contract call, $e$ the emitted event, and $s' \in S$ the resulting state. Semantic action names are deliberately distinct from contract function names; for the evaluated prototype the bindings are:
+\begin{itemize}
+    \item $\phi(\textit{issue})$: guard \texttt{onlyAdmin}; call \texttt{issueCert}; event \texttt{CertIssued} (with ERC-721 \texttt{Transfer} from the zero address); $\bot \rightarrow \textit{Active}$.
+    \item $\phi(\textit{transfer})$: guard ERC-721 owner/approved and not-suspended; call \texttt{safeTransferFrom}; event ERC-721 \texttt{Transfer}; $\textit{Active} \rightarrow \textit{Active}$.
+    \item $\phi(\textit{suspend})$: guard \texttt{onlyAdmin}; call \texttt{blockCert}; event \texttt{CertBlocked}; $\textit{Active} \rightarrow \textit{Suspended}$.
+    \item $\phi(\textit{reinstate})$: guard \texttt{onlyAdmin}; call \texttt{unblockCert}; event \texttt{CertUnblocked}; $\textit{Suspended} \rightarrow \textit{Active}$.
+\end{itemize}
+Read-only inspection (\textit{fetch}) is modeled by a separate binding $\phi_{read}$ that returns certificate data without emitting events or changing state. Correctness of lifecycle evolution depends on $\delta$, while $\phi$ provides its verifiable execution-layer realization.
+
+It is important to distinguish the semantic transitions above from the guards actually enforced on-chain. The state annotations $\textit{Active} \rightarrow \textit{Suspended}$ and $\textit{Suspended} \rightarrow \textit{Active}$ express the intended semantics of $\textit{suspend}$ and $\textit{reinstate}$; the contract, however, enforces only the \texttt{onlyAdmin} authorization guard (and certificate existence) and does not enforce the current-state precondition. Consequently, \texttt{blockCert} and \texttt{unblockCert} are idempotent: repeatedly invoking \texttt{blockCert} on an already-suspended certificate, or \texttt{unblockCert} on an active one, succeeds without reverting and leaves the state unchanged. The semantic precondition is therefore a property of the lifecycle model rather than an implementation-enforced invariant.
+
+Therefore, the semantic integrity of certificate state transitions remains invariant under substitution of execution infrastructures (e.g., Layer-1, zkRollup, or permissioned blockchain systems), provided that $\phi$ preserves transition atomicity and immutability guarantees.
+
+Taken together, the proposed framework establishes a formally defined and execution-layer-decoupled architectural foundation for scalable and verifiable e-certificate systems.
+
+%\FloatBarrier
+\section{NFTCowCert V2: A Prototype Implementation of the Proposed Framework}
+
+This section presents NFTCowCert V2 as a prototype system developed to instantiate and empirically validate the framework introduced in Section~III. The objective of this prototype is not to introduce a domain-specific certification solution, but to demonstrate that the proposed lifecycle-aware and layered framework can be realized in practice and evaluated under controlled yet realistic deployment conditions.
+
+NFTCowCert V2 is implemented and evaluated using a livestock pedigree certification use case. Livestock certificates were selected as a representative stress-test domain due to their stringent requirements for traceability, ownership control, reversible suspension, and long-term auditability. Importantly, this use case serves solely as an experimental validation context and does not constrain the generality of the underlying framework.
+
+The prototype maps the abstract lifecycle model and layered architecture onto a concrete execution environment based on a Layer-2 validity-rollup architecture. Fig.~\ref{fig:flow} illustrates the end-to-end certificate issuance and verification process. Certificate metadata is submitted off-chain and validated according to domain policy. Approved certificates are issued on Layer-2, where transactions are aggregated into batches and executed off-chain. A succinct validity proof is subsequently generated and submitted to Ethereum Layer-1, anchoring state commitments. Certificate verification is performed through read-only inspection of on-chain events and content-addressed metadata, enabling independent reconstruction without centralized intermediaries.
+
+The smart contracts in NFTCowCert V2 expose a minimal lifecycle-aligned interface. The semantic actions map to concrete contract functions as follows: \textit{issue} $\rightarrow$ \texttt{issueCert}, \textit{transfer} $\rightarrow$ ERC-721 \texttt{safeTransferFrom}, \textit{suspend} $\rightarrow$ \texttt{blockCert}, \textit{reinstate} $\rightarrow$ \texttt{unblockCert}, and the read-only \textit{fetch} $\rightarrow$ \texttt{certs}/\texttt{getCertStatus}/\texttt{isCertBlocked}. State-changing operations emit dedicated events (\texttt{CertIssued}, \texttt{CertBlocked}, \texttt{CertUnblocked}); ownership transfer is observed through the standard ERC-721 \texttt{Transfer} event, as no dedicated transfer event is defined. These events enable deterministic reconstruction of certificate state without reliance on centralized services. Certificate metadata is referenced via content-addressable identifiers to support long-term verifiability.
+
+\subsection{Experimental Execution Model}
+
+To empirically evaluate the proposed framework, NFTCowCert V2 was instrumented with reproducible benchmark scripts and controlled workloads. Each lifecycle operation type (mint/issue, transfer, block, unblock, and metadata fetch) was evaluated under multiple workload scales consisting of 100, 500, and 1000 transactions.
+
+For each workload size, transactions were executed over distinct certificate instances. No transaction was replayed over an identical token object. As workload size increased, the system state evolved monotonically, thereby reflecting realistic certificate population growth rather than isolated microbenchmark execution.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=1\columnwidth]{img05.png}
+\caption{Certificate execution flow in the NFTCowCert V2 prototype.}
+\label{fig:flow}
+\end{figure}
+
+Transactions within each workload were submitted concurrently using a parallel execution script implemented via Hardhat and Ethers.js. However, transactions were confirmed independently by the Layer-2 sequencer according to network ordering rules. No synthetic caching layer or local simulation was used; all interactions were performed directly against deployed smart contracts on the target network.
+
+Transaction duration was measured from RPC submission to receipt confirmation returned by the Layer-2 sequencer. Layer-1 proof finality was not included in latency measurements. For each workload scale, mean latency, minimum and maximum values, and standard deviation were computed to characterize stability under increasing state cardinality.
+
+This workload-scaling design enables evaluation of system behavior under progressively larger certificate sets, providing insight into scalability characteristics beyond single-batch execution.
+
+Performance metrics include:
+\begin{itemize}
+\item Transaction latency (ms)
+\item Gas consumption (units)
+\item Estimated transaction cost (USD equivalent)
+\item Sustained application-level throughput (TPS)
+\end{itemize}
+
+Because each operation was executed on distinct certificate instances and system state size increased during execution, the evaluation reflects scalability across growing certificate populations rather than repeated invocation over a static state.
+
+The prototype serves as the experimental vehicle through which the proposed framework is instantiated and evaluated. Performance evaluation results derived from this implementation are presented and analyzed in the subsequent section.
+
+\subsection{Reproducibility and Artifact Availability}
+
+To enable independent verification of the reported results, all implementation artifacts of the NFTCowCert V2 prototype are publicly available. The released artifacts include (i) the complete source code repository with a tagged release and commit identifier, (ii) deployed smart contract addresses on target networks, (iii) benchmark scripts reproducing the workloads reported in this study, and (iv) seed datasets used for transaction generation.
+
+\begin{itemize}
+\item \textbf{Repository:} \url{https://github.com/suradathb/e-Certificate.git}
+\item \textbf{Release version:} \texttt{v2.0.0}
+\item \textbf{Commit hash:} \texttt{\seqsplit{0xe02202026bac409ac9326381e58e29260b137dbcce3db2d6f9683d6876c10d4e}}
+\item \textbf{zkSync Era testnet contract:} \texttt{\seqsplit{0x3d4c77ca697938F32A4b6F8e7DFE7313645178aB}}
+\item \textbf{Ethereum Sepolia baseline contract:} \texttt{\seqsplit{0xedf4B1C6AF6520bb76826525adef7e0e09Af2c8d}}
+\end{itemize}
+
+The repository serves as the authoritative reference for the experimental setup and artifacts reported in this paper.
+
+%\FloatBarrier
+\section{Experimental Results}
+\label{sec:results}
+
+This section reports the empirical evaluation of NFTCowCert V2, focusing on application-level performance characteristics relevant to large-scale certificate issuance. Consistent with the methodological framing in Section~III, the evaluation emphasizes three dimensions: (i) transaction confirmation latency, (ii) gas-based cost efficiency, and (iii) sustained application-level throughput. Experiments were conducted primarily on zkSync Era Layer-2 (L2), with Ethereum Layer-1 (L1) serving as a baseline reference, to provide cross-layer contextual comparison under realistic deployment constraints.
+
+\subsection{Experimental Setup}
+
+We evaluate three certificate lifecycle operations in the livestock certification use case: certificate issuance (minting), ownership transfer, and metadata retrieval via IPFS. For each operation, transactions were executed as a single parallel batch with batch sizes $N \in \{100, 500, 1{,}000\}$ under controlled execution windows and consistent network conditions.
+
+The evaluation is intentionally structured to examine workload-dependent scaling behavior within a fixed operational regime. Rather than emphasizing inter-batch temporal variance across different time intervals, the analysis focuses on intra-batch distributional stability, which is directly relevant to high-volume certificate issuance scenarios where transactions are submitted in concentrated bursts.
+
+The selected workload sizes (100, 500, and 1,000 transactions) were chosen to reflect progressively increasing certificate populations while maintaining stability under testnet RPC rate limits and execution constraints. Larger batch sizes were not evaluated due to practical limitations in public testnet infrastructure, including rate throttling and gas estimation variability.
+
+Each batch yields $N$ independent transaction observations at the application level. This design enables statistically meaningful inference through distributional analysis of per-transaction measurements without conflating workload-driven scaling effects with external network fluctuations. By isolating execution within defined operational windows, the study prioritizes comparability across workload sizes while maintaining ecological validity for real-world batch-oriented deployments.
+
+Per-transaction latency and gas usage were recorded for every transaction within each batch. Robust descriptive statistics are reported, including median values, interquartile ranges (IQR), and 95th percentiles (P95), which are appropriate for skewed performance distributions commonly observed in blockchain systems.
+
+To further support inferential validity, bootstrap-based 95\% confidence intervals (CI) were computed over per-transaction samples using non-parametric resampling. This approach avoids strong distributional assumptions and provides reliable uncertainty estimates for application-level performance metrics within each evaluated workload.
+
+\begin{table}[t]
+\caption{Experimental configuration}\label{tab:config}
+\begin{tabular*}{\textwidth}{@{\extracolsep\fill}lp{9.5cm}}
+\toprule
+\textbf{Parameter} & \textbf{Value / Method} \\
+\midrule
+Networks & zkSync Era (Testnet, primary), Ethereum L1 (Sepolia, baseline) \\
+Operations & Mint, Transfer, Metadata Fetch \\
+Workloads & Single batch of 100, 500, 1{,}000 parallel tx (L2); limited baseline execution on L1 \\
+Metrics & Latency, Gas cost (USD), Throughput (TPS) \\
+Statistical reporting & Median, IQR, P95, Bootstrap 95\% CI \\
+Gas price (L1) & 25 Gwei (fixed, baseline reference) \\
+Gas price (L2) & 0.25 Gwei (fixed) \\
+ETH/USD rate & 3{,}200 USD (constant for reproducibility) \\
+Automation & Hardhat + Ethers.js parallel executor \\
+IPFS gateway & Cloudflare (primary) / Infura (fallback) \\
+\botrule
+\end{tabular*}
+\end{table}
+
+Table~\ref{tab:config} summarizes the experimental configuration, including blockchain environments, workload definitions, pricing assumptions, and statistical reporting methods.
+
+\subsection{Computation Model}
+
+Let $\{T_j\}_{j=1}^{N}$ and $\{G_j\}_{j=1}^{N}$ denote the per-transaction confirmation latency and gas usage, respectively, observed within a batch of size $N \in \{100, 500, 1{,}000\}$. We report the median latency $\tilde{T}$, interquartile range (IQR), and 95th percentile (P95) as robust indicators of central tendency and tail performance.
+
+Bootstrap-based 95\% confidence intervals were computed using 10{,}000 resamples with bias-corrected and accelerated (BCa) intervals applied to the observed per-transaction latency samples within each workload batch (N = 100, 500, and 1000).
+
+Gas cost per transaction in USD was computed as:
+\begin{equation}
+\mathrm{Fee}_{\mathrm{USD}} = \mathrm{median}(G) \times \mathrm{GasPrice} \times \mathrm{ETH/USD},
+\end{equation}
+where $G$ denotes gas usage measured in gas units.
+
+Application-level throughput was defined as:
+\begin{equation}
+\mathrm{TPS} = \frac{N}{T_{\mathrm{batch}}},
+\end{equation}
+where $T_{\mathrm{batch}}$ is the elapsed wall-clock time from submission of the first transaction to confirmation of the final transaction in the batch.
+
+\subsection{Latency Results}
+
+Across all evaluated workloads, zkSync Era achieved low and stable confirmation latency for certificate operations. For state-changing operations, including mint, transfer, block, and unblock, the median per-transaction latency ranged approximately between $2.3$ and $2.8~\mathrm{s}$ across all workload sizes.
+
+In contrast, metadata fetch operations exhibited significantly lower latency, remaining below $0.4~\mathrm{s}$. Fetch operations represent read-only queries and are not subject to blockchain execution or consensus mechanisms; therefore, fetch latency reflects off-chain data retrieval performance rather than transaction confirmation latency.
+
+Fig.~\ref{fig:latency} presents the latency distribution across workloads. For completeness, fetch operations are visualized alongside state-changing transactions to illustrate end-to-end application latency; however, they are not directly comparable due to their read-only nature.
+
+Latency distributions remained relatively stable as workload size increased, indicating that confirmation time does not scale linearly with batch size within the evaluated range. While the aggregated range is reported as $2.3$--$2.8~\mathrm{s}$ for clarity, minor variation across operation types and workload sizes is visible in Fig.~\ref{fig:latency}.
+
+This behavior indicates that confirmation delay is primarily governed by sequencer-level processing rather than transaction volume, resulting in stable user-perceived confirmation latency under increasing workloads.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\columnwidth]{img7.png}
+\caption{Latency distribution across workloads (ms).}
+\label{fig:latency}
+\end{figure}
+
+By contrast, baseline measurements on Ethereum Layer-1 exhibited substantially higher confirmation delays, exceeding $12~\mathrm{s}$ under comparable operational conditions. This difference reflects the separation of execution and settlement inherent to Layer-2 validity rollup architectures.
+
+This observation is consistent with the execution-layer decoupling model introduced in Section~3, where confirmation latency is governed by sequencer-level processing rather than transaction volume.
+
+\subsection{Cost Results}
+
+Gas-based cost evaluation demonstrates a substantial reduction in certificate issuance expense on Layer-2. For the $N=1{,}000$ batch, the median issuance cost on zkSync Era was \$0.021 (95\% CI $=[0.018, 0.025]$), compared with a baseline cost of \$3.12 on Ethereum Layer-1. This corresponds to a reduction of approximately 95--99\%, depending on workload and gas conditions.
+
+Cost distributions exhibited limited variance across batch sizes on Layer-2, indicating predictable per-certificate expenditure under fixed gas pricing assumptions.
+
+In addition to the magnitude of cost reduction, the relatively stable cost distribution across workload sizes suggests that Layer-2 pricing is largely insensitive to application-level demand under fixed gas assumptions. This behavior contrasts with Layer-1 environments, where transaction fees are strongly influenced by congestion and fee-market dynamics.
+
+This observation is consistent with the execution-layer decoupling model, where transaction cost remains stable due to batch-based execution and reduced dependence on Layer-1 fee dynamics.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\columnwidth]{img9.png}
+\caption{Mint cost on Layer-2 (USD).}
+\label{fig:cost}
+\end{figure}
+
+\subsection{Throughput Results}
+
+Under the largest evaluated workload ($N=1{,}000$), NFTCowCert V2 achieved an application-level submission throughput of $2{,}037~\mathrm{TPS}$ on zkSync Era (P95 $=2{,}121$). For contextual comparison, baseline throughput observed on Ethereum Layer-1 was approximately $15~\mathrm{TPS}$ under comparable operational conditions.
+
+As shown in Fig.~\ref{fig:tps}, throughput increases with workload size, indicating that the system benefits from batch-oriented execution and parallel transaction submission. The observed scaling behavior suggests that performance is primarily governed by application-layer concurrency and sequencer-driven processing rather than direct transaction-level competition.
+
+The reported TPS reflects application-level submission throughput measured under controlled experimental conditions, incorporating client-side concurrency, RPC interaction, and Layer-2 confirmation behavior within a bounded execution window. It does not represent the theoretical maximum protocol capacity of zkSync Era, nor does it imply sustained network-wide throughput under adversarial or congested conditions.
+
+Fetch operations are included in the evaluation for completeness of the application workflow; however, they do not represent blockchain transaction throughput and are not considered in TPS interpretation.
+
+This observation is consistent with the execution-layer decoupling model introduced in Section~3, where high application-level throughput is enabled by off-chain execution, concurrent transaction submission, and batch-oriented processing rather than direct Layer-1 transaction competition.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\columnwidth]{img8.png}
+\caption{Throughput scaling across workloads (TPS).}
+\label{fig:tps}
+\end{figure}
+
+\subsection{Summary}
+
+Across all evaluated workloads in the livestock certification use case, NFTCowCert V2 achieved low and stable confirmation latency on Layer-2. State-changing operations exhibited median per-transaction latency in the range of approximately $2$--$3~\mathrm{s}$, while metadata fetch operations remained in the sub-second range.
+
+In addition, the system achieved approximately 95--99\% reduction in gas cost relative to Layer-1 baselines and sustained application-level throughput exceeding $2{,}000~\mathrm{TPS}$ under the evaluated workload conditions.
+
+Beyond raw performance improvements, these results indicate that Layer-2 behavior is governed by execution-layer decoupling, where latency, cost, and throughput are influenced by sequencer-driven processing and batching mechanisms rather than purely by transaction volume. These findings highlight the importance of workload structuring and application-layer design in realizing the performance benefits of Layer-2 architectures.
+
+
+%\FloatBarrier
+\section{Discussion}
+
+This section discusses the experimental results with respect to the proposed Layer-2-based e-certificate framework and its design objectives. NFTCowCert V2 is employed as a prototype implementation and livestock pedigree case study to empirically validate the framework under controlled and reproducible workloads. The discussion situates the observed performance characteristics within the broader context of blockchain-based certification systems and Layer-2 architectures.
+
+\subsection{Interpretation of Experimental Findings}
+
+The experimental evaluation demonstrates that NFTCowCert V2, when deployed on zkSync Era, achieves substantial improvements in application-level performance relative to Ethereum Layer-1 (L1) for certificate-oriented workloads. Under single-batch executions with $N \in \{100, 500, 1000\}$ transactions, the median per-transaction issuance cost was reduced by approximately $95$--$99\%$ compared to historical L1 baselines reported in~\cite{bangnikrai2022blockchain}. These reductions were accompanied by low and stable confirmation latency, with state-changing operations remaining in the range of approximately $2$--$3~\mathrm{s}$, while metadata fetch operations remained below one second.
+
+These empirical observations are consistent with the execution-layer decoupling hypothesis introduced in Section~3, demonstrating that lifecycle semantics remain invariant while performance characteristics improve under validity-rollup execution. However, it is important to note that the evaluation does not isolate all contributing factors (e.g., batching effects and RPC concurrency). Therefore, the observed behavior should be interpreted as empirical support rather than strict causal proof of the decoupling model.
+
+From a system perspective, these improvements arise not only from reduced computational overhead, but from structural separation between execution and settlement layers, which fundamentally alters scalability behavior compared to Layer-1 architectures. In particular, the observed stability of latency and cost across increasing workloads indicates that system behavior is governed by sequencer-driven processing and batching mechanisms rather than direct transaction-level competition.
+
+These improvements should be interpreted as a consequence of architectural trade-offs rather than inherent limitations of Layer-1. Ethereum L1 prioritizes maximal decentralization and security, with execution tightly coupled to global consensus and block production. In contrast, validity-rollup architectures shift transaction execution off-chain while preserving on-chain verification guarantees, enabling higher throughput and lower per-transaction cost for application-level workflows such as certificate issuance.
+
+These findings are consistent with independent Layer-2 performance analyses reported in the literature~\cite{l2beat2024zk}, notwithstanding the use of single-batch execution within defined execution windows to isolate workload-dependent scaling effects.
+
+\subsection{Comparison to Layer-1 Baseline and Prior Work}
+
+The original Layer-1 implementation of NFTCowCert~\cite{bangnikrai2022blockchain} demonstrated the feasibility of blockchain-based pedigree certification but incurred median issuance costs in the range of USD \$3--\$8, together with confirmation latencies on the order of tens of seconds under typical network conditions. While acceptable for low-frequency certification tasks, such characteristics become prohibitive for large-scale or time-sensitive deployments.
+
+In contrast, the Layer-2 deployment evaluated in this work reduced median gas expenditure by approximately $95$--$99\%$ and reduced confirmation latency from approximately 15 s on Layer-1 to approximately 2--3 s for state-changing operations on Layer-2, while metadata fetch operations remained below one second across tested workloads. Execution behavior on Layer-2 also exhibited reduced sensitivity to transient fee-market fluctuations, reflecting the decoupling of application execution from Layer-1 congestion dynamics.
+
+Prior studies have explored blockchain-based credentialing in educational and industrial contexts~\cite{chen2023cert,arora2022sok}. However, most existing works either rely on Layer-1 deployments or lack empirical validation of full certificate lifecycles under realistic workloads. In the context of emerging modular blockchain architectures that separate execution, settlement, and data availability layers~\cite{malavolta2024modular}, the results presented here provide concrete empirical evidence that application-level certification systems can be migrated to validity-rollup infrastructures without sacrificing trust guarantees.
+
+Importantly, the comparison highlights that the primary advantage of Layer-2 is not merely improved raw performance, but a shift in performance determinism. Unlike Layer-1 systems, where cost and latency are highly sensitive to global network conditions, the Layer-2 execution model exhibits more stable and predictable behavior under controlled workloads, which is a critical property for operational systems requiring consistency and reliability.
+
+
+\subsection{Security Implications in zkRollup Architectures}
+
+Validity rollups provide strong correctness guarantees by requiring that all state transitions within a transaction batch satisfy a predefined transition function $f(\cdot)$, which is verified on-chain through a succinct cryptographic proof $\pi$. This results in an $O(1)$ on-chain verification cost per batch, in contrast to the $O(n)$ execution overhead incurred by direct transaction processing on Layer-1. This asymptotic efficiency directly explains the observed reductions in gas cost and confirmation latency under increasing batch sizes.
+
+Nevertheless, these performance gains are accompanied by distinct security and trust trade-offs arising from the architectural separation between execution and settlement. Current zkRollup deployments typically rely on centralized or semi-centralized sequencers, which may introduce censorship resistance and liveness risks under adversarial or failure scenarios~\cite{chaliasos2024snarkvulns}. In addition, while state commitments and validity proofs are ultimately anchored on Layer-1, long-term verifiability of certificates depends on the continued availability of off-chain metadata referenced via content-addressed identifiers (e.g., IPFS).
+
+For NFTCowCert V2, these risks primarily affect certificate availability and liveness rather than integrity, as certificate state transitions remain verifiable through on-chain proofs even under partial system failures. However, if off-chain metadata becomes unavailable, independent reconstruction of certificate state may be impaired despite the integrity of on-chain commitments.
+
+Furthermore, certain zk-SNARK constructions employed in contemporary rollup systems rely on trusted setup assumptions. Although these setups are typically executed under multi-party computation ceremonies, compromise of setup artifacts could theoretically undermine soundness guarantees. These risks reflect the current maturity stage of Layer-2 ecosystems rather than limitations of the NFTCowCert V2 design itself.
+
+To provide a structured overview of these challenges, Fig.~\ref{fig:l2-risks}
+illustrates the key risk dimensions associated with Layer-2 NFT operations.
+These include bridge-related vulnerabilities, user-level operational complexity,
+and cross-layer consistency issues such as liquidity fragmentation and metadata synchronization.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\columnwidth]{fig12.png}
+\caption{Risk dimensions in Layer-2 NFT operations.}
+\label{fig:l2-risks}
+\end{figure}
+
+From a system design perspective, scalability improvements achieved through Layer-2 execution must be interpreted alongside corresponding trust assumptions. In particular, increased performance is coupled with reliance on off-chain execution components, suggesting that system architects must explicitly balance performance objectives against decentralization and fault tolerance requirements.
+
+
+\subsection{System Limitations and Practical Deployment Constraints}
+
+The evaluation presented in this study is subject to several practical constraints.
+
+First, the experiments were conducted under controlled batch execution conditions, where each certificate operation was executed as a single batch for $N \in \{100, 500, 1{,}000\}$ transactions within defined execution windows. While this setup enables isolation of workload-dependent scaling behavior, it does not capture inter-batch temporal variability or long-term execution dynamics.
+
+Second, Layer-1 baseline experiments were conducted under smaller workload volumes. As a result, cross-layer comparisons are normalized at the per-transaction level rather than by matching identical batch sizes. The analysis therefore emphasizes relative efficiency and scaling characteristics rather than absolute throughput ceilings.
+
+Third, the evaluation focuses on application-level performance metrics, including latency, gas expenditure, and throughput. Protocol-level properties such as sequencer decentralization, governance mechanisms, and fault recovery behavior were not empirically measured.
+
+Fourth, the study does not incorporate adversarial fault injection scenarios, such as sequencer downtime, network partitioning, or off-chain data unavailability. Consequently, the evaluation does not capture worst-case degradation behavior or recovery dynamics under adverse conditions.
+
+Finally, although NFTCowCert V2 is architecturally domain-extensible, empirical validation in this study is limited to the livestock pedigree certification use case. Cross-domain empirical generalizability cannot be established from the present evaluation, and extension to other domains may introduce different lifecycle rules, authorization and governance models, metadata structures, and suspension/revocation semantics.
+
+These limitations indicate that the reported performance characteristics should be interpreted as representative of controlled execution environments rather than fully dynamic network conditions.
+
+
+\subsection{Implications, Generalizability, and Research Outlook}
+
+Three key implications follow from these findings. First, validity-rollup infrastructures can deliver substantial economic and performance benefits for certificate-oriented workloads, as evidenced by the observed $95$--$99\%$ reduction in gas cost and low and stable confirmation latency, with state-changing operations in the range of approximately 2--3 seconds and metadata fetch operations in the sub-second range. Second, the identified security and availability trade-offs motivate complementary architectural mechanisms—such as decentralized sequencing and modular data availability—to further strengthen certification deployments. Third, the reproducible evaluation methodology adopted in this study provides a blueprint that could, in principle, be reused to assess blockchain-based certification systems in other domains, although such cross-domain assessment is not performed here and remains future work.
+
+In addition, the results suggest that effective deployment of Layer-2-based certification systems depends not only on underlying protocol capabilities but also on application-level design choices, including batching strategies, concurrency models, and data availability mechanisms. This highlights the importance of treating blockchain integration as a system-level design problem rather than a purely protocol-level optimization.
+
+To illustrate how the framework's semantic elements could be reinterpreted in other certificate domains, Table~\ref{tab:conceptual-adaptation} maps the core framework elements onto two additional domains. These mappings are conceptual adaptation examples only; the academic-credential and professional-license columns are \emph{not} implementations, experiments, or empirical validations performed in this study. Only the livestock pedigree column corresponds to the evaluated prototype.
+
+\begin{table}[!htbp]
+\centering
+\caption{Conceptual adaptation of framework elements across certificate domains. Only the livestock pedigree column is implemented and evaluated in this study; the academic-credential and professional-license columns are conceptual examples, not empirical validations.}
+\label{tab:conceptual-adaptation}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Framework element} & \textbf{Livestock pedigree (evaluated)} & \textbf{Academic credential (conceptual)} & \textbf{Professional license (conceptual)} \\
+\midrule
+subject & animal / owner & student / graduate & licensed professional \\
+issuer & pedigree association & university & licensing authority \\
+metadata & pedigree information & credential information & license information \\
+suspend/reinstate & pedigree under dispute / restored & credential under investigation / restored & temporary suspension / reinstatement \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The following row illustrates a possible \emph{framework extension} and is not part of the evaluated NFTCowCert lifecycle:
+
+\begin{table}[!htbp]
+\centering
+\caption{Conceptual extension (not implemented or evaluated in the NFTCowCert prototype).}
+\label{tab:conceptual-extension}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Conceptual extension} & \textbf{Livestock example} & \textbf{Academic example} & \textbf{Professional example} \\
+\midrule
+revocation (not implemented/evaluated) & invalidated pedigree certificate & withdrawn credential & revoked professional license \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Future work will extend this evaluation to mainnet environments with repeated-batch execution, integrate decentralized identity primitives such as Verifiable Credentials (VCs) and decentralized identifiers (DIDs), and explore hybrid architectures that combine validity rollups with modular data availability layers. These directions will enable deeper assessment of scalability, interoperability, and long-term verifiability in production-grade certification systems.
+
+%\FloatBarrier
+\section{Conclusion}
+
+This study presented NFTCowCert V2, a Layer-2-based digital certification framework designed to support cost-efficient, scalable, and tamper-resistant certificate issuance. Built on zkSync’s validity rollup architecture and content-addressed storage (IPFS), the framework demonstrates that complete certification lifecycles—including issuance, transfer, and verification—can be executed on Layer-2 infrastructures with substantially reduced gas expenditure and lower confirmation latency compared to Ethereum Layer-1.
+
+The empirical evaluation, conducted using a livestock pedigree certification use case with real-world Brahman cattle metadata, provides controlled and reproducible evidence of system performance under practical deployment constraints. Within this setting, the results validate the feasibility of a decentralized, database-free certification architecture, achieving low and stable latency, significant cost reduction, and high application-level throughput under increasing workloads. While the evaluation is intentionally scoped, it is sufficient to establish the architectural soundness and operational efficiency of the proposed framework.
+
+Although NFTCowCert V2 is designed to be domain-extensible, this study does not claim cross-domain generalizability as an experimental result. Instead, applicability to other domains—such as academic credentials or carbon credit systems—is identified as a direction for future validation. Furthermore, several system-level trade-offs, including reliance on centralized or semi-centralized sequencers, dependence on off-chain data availability, and trusted setup assumptions in certain proof systems, reflect the current maturity of Layer-2 ecosystems rather than limitations of the framework itself.
+
+Future work will extend this study by incorporating mainnet deployments with repeated-batch execution, integrating decentralized identity primitives such as decentralized identifiers (DIDs) and Verifiable Credentials (VCs), and conducting cross-domain pilot implementations. These extensions will enable a more comprehensive evaluation of scalability, interoperability, fault tolerance, and long-term verifiability in production environments.
+
+Overall, this work establishes a reproducible and empirically grounded foundation for Layer-2-based certification systems. The results demonstrate that lifecycle-aware certification architectures can be practically realized on validity-rollup infrastructures, delivering measurable improvements in cost efficiency, performance stability, and scalability. These findings provide a concrete pathway toward deploying high-volume, trust-minimized certification systems beyond experimental settings.
+
+\section*{Statements and Declarations}
+
+\textbf{Funding}  
+No funding was received for this study.
+
+\textbf{Competing Interests}  
+The authors have no competing interests to declare.
+
+\textbf{Author Contributions}  
+All authors contributed to the study conception and design. Material preparation, data collection, and analysis were performed by Suradath Bangnikrai. The first draft of the manuscript was written by Suradath Bangnikrai, and all authors commented on previous versions. All authors read and approved the final manuscript.
+
+\textbf{Data Availability}  
+The source code, benchmarking scripts, and experimental datasets used in this study are publicly available at:  
+\url{https://github.com/suradathb/e-Certificate.git}
+
+% --- References ---
+\bibliography{CC}
+
+\end{document}

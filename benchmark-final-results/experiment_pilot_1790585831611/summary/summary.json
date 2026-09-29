@@ -1,0 +1,17 @@
+[
+  {
+    "run_id": "mint_N500_c3_r1",
+    "N": 500,
+    "concurrency": 3,
+    "final_success": 500,
+    "final_failure": 0,
+    "first_attempt_success": 500,
+    "total_retry_attempts": 0,
+    "batch_duration_ms": 2016954,
+    "tps_completed": 0.248,
+    "latency_median_ms": 12120.743146000023,
+    "latency_p95_ms": 12937.86632919996,
+    "latency_iqr_ms": 1111.2384794999525,
+    "latency_max_ms": 23352.647457999876
+  }
+]

@@ -43,7 +43,7 @@ async function main() {
   const results: any[] = [];
   const failed: any[] = [];
 
-  console.log(`🚀 [05_fetch] items=${items.length}`);
+  console.log(`[05_fetch] items=${items.length}`);
 
   for (let i = 0; i < items.length; i++) {
     const r = items[i];
@@ -71,7 +71,7 @@ async function main() {
       };
 
       results.push(row);
-      console.log(`✅ fetch ok`);
+      console.log(` fetch ok`);
     } catch (err: any) {
       const end = Date.now();
       const e = extractError(err);
@@ -88,19 +88,19 @@ async function main() {
 
       failed.push(row);
       results.push(row);
-      console.error(`❌ fetch failed: ${e.message}`);
+      console.error(` fetch failed: ${e.message}`);
     }
 
     safeWriteJSON(OUT_RESULTS, results);
     safeWriteJSON(OUT_FAIL, failed);
   }
 
-  console.log(`\n🎉 [05_fetch] done -> ${OUT_RESULTS}`);
-  console.log(`🧾 failed -> ${OUT_FAIL}`);
+  console.log(`\n [05_fetch] done -> ${OUT_RESULTS}`);
+  console.log(` failed -> ${OUT_FAIL}`);
 }
 
 main().catch((e) => {
-  console.error("💥 fatal:", e);
+  console.error(" fatal:", e);
   process.exit(1);
 });
 // npx ts-node 05_fetch.ts

@@ -1,0 +1,47 @@
+[
+  {
+    "run_id": "mint_N100_c3",
+    "N": 100,
+    "concurrency": 3,
+    "final_success": 100,
+    "final_failure": 0,
+    "first_attempt_success": 100,
+    "total_retry_attempts": 0,
+    "batch_duration_ms": 105706,
+    "tps_completed": 0.946,
+    "latency_median_ms": 3129.0507709999947,
+    "latency_p95_ms": 4614.863910400001,
+    "latency_iqr_ms": 1171.0591250000016,
+    "latency_max_ms": 6252.125791999999
+  },
+  {
+    "run_id": "mint_N500_c3",
+    "N": 500,
+    "concurrency": 3,
+    "final_success": 500,
+    "final_failure": 0,
+    "first_attempt_success": 500,
+    "total_retry_attempts": 0,
+    "batch_duration_ms": 437049,
+    "tps_completed": 1.144,
+    "latency_median_ms": 2053.1080000000075,
+    "latency_p95_ms": 4448.428619050004,
+    "latency_iqr_ms": 1238.7098439999972,
+    "latency_max_ms": 11723.814542000007
+  },
+  {
+    "run_id": "mint_N1000_c3",
+    "N": 1000,
+    "concurrency": 3,
+    "final_success": 1000,
+    "final_failure": 0,
+    "first_attempt_success": 1000,
+    "total_retry_attempts": 0,
+    "batch_duration_ms": 1024603,
+    "tps_completed": 0.976,
+    "latency_median_ms": 2798.329687499907,
+    "latency_p95_ms": 4845.481245549965,
+    "latency_iqr_ms": 1588.3189999999595,
+    "latency_max_ms": 46097.57979199989
+  }
+]

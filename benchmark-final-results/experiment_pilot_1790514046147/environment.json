@@ -1,0 +1,20 @@
+{
+  "timestamp_utc": "2026-09-27T13:00:47.743Z",
+  "os": "darwin",
+  "os_version": "25.6.0",
+  "cpu_model": "Apple M1 Pro",
+  "cpu_count": 10,
+  "ram_total_bytes": 17179869184,
+  "node_version": "v22.22.3",
+  "ethers_version": "6.16.0",
+  "hardhat_version": null,
+  "git_commit": null,
+  "git_branch": null,
+  "git_dirty": null,
+  "network": "zkSyncTestnet",
+  "chain_id": 300,
+  "rpc_provider_host": "sepolia.era.zksync.dev",
+  "contract_address": "0x3D16641A759A4d524B5ec0a968595C7FF700C0cF",
+  "contract_source_sha256": "1da0348de590f0242f1cb3f5ec88af3126f0613a6c363b39197efa710f46b22b",
+  "runner_sha256": "9d9f06ea74f375a8f34f486e7982003e913a6516093ed3f3b0082e66a559ff8c"
+}

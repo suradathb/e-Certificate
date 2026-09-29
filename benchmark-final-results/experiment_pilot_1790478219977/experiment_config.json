@@ -1,0 +1,34 @@
+{
+  "experiment_id": "pilot_1790478219977",
+  "mode": "local",
+  "Ns": [
+    5,
+    10
+  ],
+  "concurrencyLevels": [
+    1,
+    2,
+    4
+  ],
+  "operation": "mint",
+  "retry": {
+    "max_retries": 3,
+    "backoff": "exponential",
+    "backoff_base_ms": 250,
+    "retryable": [
+      "RPC_TIMEOUT",
+      "RPC_RATE_LIMIT",
+      "RPC_CONNECTION",
+      "NONCE_ERROR",
+      "REPLACEMENT_ERROR",
+      "RECEIPT_TIMEOUT"
+    ],
+    "non_retryable": [
+      "INSUFFICIENT_FUNDS",
+      "GAS_ESTIMATION",
+      "CONTRACT_REVERT",
+      "UNKNOWN"
+    ]
+  },
+  "seedNote": "deterministic cowIds"
+}

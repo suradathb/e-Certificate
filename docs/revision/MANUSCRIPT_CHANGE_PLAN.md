@@ -22,3 +22,19 @@
 - State-machine figure (Sec. 3.2): redraw to Active/Suspended with reversible edges + creation edge; remove/relabel `Revoked` as dashed "extension".
 - New table: φ instantiation (Sec. 3.3/3.4) — reuse FORMAL_MODEL_ALIGNMENT §5.
 - New/updated table: layer-to-artifact mapping (R1-15) — *pending STEP for architecture layers (not this round)*.
+
+## STEP 3 additions — φ instantiation (R1-16, R1-14, R2-04, R2-01)
+
+| # | Reviewer | Current statement | Problem | Required revision | Evidence | Section |
+|---|----------|-------------------|---------|-------------------|----------|---------|
+| P1 | R1-16 | `φ : L_semantic → L_execution` (abstract arrow) | Not operational; cannot be traced/tested | Replace with `φ(action,cert,actor,context) → (guard,contractCall,event,nextState)` + φ_read for fetch | PHI_INSTANTIATION.md §2 | Sec. 3.3/3.4 (φ definition) |
+| P2 | R1-16 | φ described in prose only | No per-action binding | Insert φ instantiation table for issue/transfer/suspend/reinstate | PHI_INSTANTIATION.md §6–§10 | Sec. 3.4 (new table) |
+| P3 | R1-14, R2-04 | semantic names implied = function names | `suspend`≠`blockCert` etc. not explained | Add explicit semantic-action ↔ contract-function mapping | PHI_INSTANTIATION.md §4 | Sec. 3.4 / Sec. 4 |
+| P4 | R1-16 | guards unspecified | Reader cannot tell enforced vs. intended | Add Guard Traceability Table; mark G5 as semantic-only (not enforced) | PHI_INSTANTIATION.md §11 | Sec. 3.4 (new table) |
+| P5 | R2-04 | events unspecified | `CertTransferred` implied | Add Event Traceability Table; state no dedicated transfer event | PHI_INSTANTIATION.md §12 | Sec. 4 |
+| P6 | R2-01 | φ implies full lifecycle incl. revoke | revoke not implemented | State φ instantiated only for evaluated subset; revoke = φ_ext (not evaluated) | PHI_INSTANTIATION.md §5,§14 | Sec. 3 / Sec. 6 |
+
+Manuscript-ready replacement text for the φ paragraph is provided in `PHI_INSTANTIATION.md` §16.
+Terminology to fix: do not call ownership transfer a state `Transferred`; use "Active→Active ownership change".
+Equation to change: the single-line φ definition → operational 4-tuple codomain.
+Tables to add: φ instantiation (§6–10), guard traceability (§11), event traceability (§12).

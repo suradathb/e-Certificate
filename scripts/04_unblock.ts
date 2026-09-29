@@ -54,7 +54,7 @@ async function main() {
   const results: any[] = [];
   const failed: any[] = [];
 
-  console.log(`🚀 [04_unblock] items=${items.length}`);
+  console.log(`[04_unblock] items=${items.length}`);
 
   for (let i = 0; i < items.length; i++) {
     const r = items[i];
@@ -82,7 +82,7 @@ async function main() {
       };
 
       results.push(row);
-      console.log(`✅ unblock ok tx=${tx.hash}`);
+      console.log(` unblock ok tx=${tx.hash}`);
     } catch (err: any) {
       const end = Date.now();
       const e = extractError(err);
@@ -99,19 +99,19 @@ async function main() {
 
       failed.push(row);
       results.push(row);
-      console.error(`❌ unblock failed: ${e.message}`);
+      console.error(` unblock failed: ${e.message}`);
     }
 
     safeWriteJSON(OUT_RESULTS, results);
     safeWriteJSON(OUT_FAIL, failed);
   }
 
-  console.log(`\n🎉 [04_unblock] done -> ${OUT_RESULTS}`);
-  console.log(`🧾 failed -> ${OUT_FAIL}`);
+  console.log(`\n [04_unblock] done -> ${OUT_RESULTS}`);
+  console.log(` failed -> ${OUT_FAIL}`);
 }
 
 main().catch((e) => {
-  console.error("💥 fatal:", e);
+  console.error(" fatal:", e);
   process.exit(1);
 });
 // npx ts-node 04_unblock.ts

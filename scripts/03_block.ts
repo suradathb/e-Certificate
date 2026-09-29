@@ -54,7 +54,7 @@ async function main() {
   const results: any[] = [];
   const failed: any[] = [];
 
-  console.log(`🚀 [03_block] items=${items.length}`);
+  console.log(`[03_block] items=${items.length}`);
 
   for (let i = 0; i < items.length; i++) {
     const r = items[i];
@@ -82,7 +82,7 @@ async function main() {
       };
 
       results.push(row);
-      console.log(`✅ block ok tx=${tx.hash}`);
+      console.log(` block ok tx=${tx.hash}`);
     } catch (err: any) {
       const end = Date.now();
       const e = extractError(err);
@@ -99,19 +99,19 @@ async function main() {
 
       failed.push(row);
       results.push(row);
-      console.error(`❌ block failed: ${e.message}`);
+      console.error(` block failed: ${e.message}`);
     }
 
     safeWriteJSON(OUT_RESULTS, results);
     safeWriteJSON(OUT_FAIL, failed);
   }
 
-  console.log(`\n🎉 [03_block] done -> ${OUT_RESULTS}`);
-  console.log(`🧾 failed -> ${OUT_FAIL}`);
+  console.log(`\n [03_block] done -> ${OUT_RESULTS}`);
+  console.log(` failed -> ${OUT_FAIL}`);
 }
 
 main().catch((e) => {
-  console.error("💥 fatal:", e);
+  console.error(" fatal:", e);
   process.exit(1);
 });
 

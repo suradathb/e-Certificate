@@ -76,7 +76,7 @@ async function main() {
 
   const failedItems = safeReadArray(IN_FAIL);
   if (failedItems.length === 0) {
-    console.log("ℹ️ No failed mint items found. Nothing to retry.");
+    console.log(" No failed mint items found. Nothing to retry.");
     return;
   }
 
@@ -97,10 +97,10 @@ async function main() {
   const retryResults: any[] = [];
   const stillFailed: any[] = [];
 
-  console.log(`🚀 [01_mint_retry] retryCount=${failedItems.length}`);
-  console.log(`👤 signer=${signer.address}`);
-  console.log(`🎯 mintTo=${mintTo}`);
-  console.log(`🔗 contract=${process.env.ZKSYNC_CONTRACT_TEST}`);
+  console.log(`[01_mint_retry] retryCount=${failedItems.length}`);
+  console.log(` signer=${signer.address}`);
+  console.log(` mintTo=${mintTo}`);
+  console.log(` contract=${process.env.ZKSYNC_CONTRACT_TEST}`);
 
   for (let i = 0; i < failedItems.length; i++) {
     // failed item structure from our scripts: { cowId, cid, mintTo?, ... }
@@ -137,7 +137,7 @@ async function main() {
       mintResults.push(row);
 
       console.log(
-        `✅ retry mint success tokenId=${tokenId ?? "UNKNOWN"} tx=${tx.hash}`,
+        ` retry mint success tokenId=${tokenId ?? "UNKNOWN"} tx=${tx.hash}`,
       );
     } catch (err: any) {
       const end = Date.now();
@@ -158,40 +158,40 @@ async function main() {
       stillFailed.push(row);
       mintResults.push(row);
 
-      console.error(`❌ retry mint failed: ${e.message}`);
+      console.error(` retry mint failed: ${e.message}`);
     }
 
-    // checkpoint ทุกใบ (กันสคริปต์ดับกลางทาง)
+    // checkpoint after each item (guards against mid-run crashes)
     safeWriteJSON(OUT_RETRY_RESULTS, retryResults);
     safeWriteJSON(OUT_RETRY_FAIL, stillFailed);
-    safeWriteJSON(IN_RESULTS, mintResults); // append ลงไฟล์หลัก
-    safeWriteJSON(IN_FAIL, stillFailed); // เหลือเฉพาะที่ยัง fail
+    safeWriteJSON(IN_RESULTS, mintResults); // append to the master file
+    safeWriteJSON(IN_FAIL, stillFailed); // keep only items that still fail
   }
 
-  console.log(`\n🎉 [01_mint_retry] done`);
-  console.log(`📄 retry results -> ${OUT_RETRY_RESULTS}`);
-  console.log(`🧾 retry failed   -> ${OUT_RETRY_FAIL}`);
-  console.log(`🧩 updated mint results -> ${IN_RESULTS}`);
-  console.log(`🔁 updated failed list  -> ${IN_FAIL}`);
+  console.log(`\n [01_mint_retry] done`);
+  console.log(` retry results -> ${OUT_RETRY_RESULTS}`);
+  console.log(` retry failed   -> ${OUT_RETRY_FAIL}`);
+  console.log(` updated mint results -> ${IN_RESULTS}`);
+  console.log(` updated failed list  -> ${IN_FAIL}`);
 }
 
 main().catch((e) => {
-  console.error("💥 fatal:", e);
+  console.error(" fatal:", e);
   process.exit(1);
 });
 
 // npx ts-node 01_mint_retry.ts
 // 01_mint_retry.ts
-// เป้าหมาย
+// Purpose
 
-// อ่าน ./output/01_mint_failed.json
+// read ./output/01_mint_failed.json
 
-// “ลอง mint ใหม่” เฉพาะใบที่เคย fail
+// retry mint only for previously failed items
 
-// ไม่หยุดทั้งชุด + log สาเหตุเหมือนเดิม
+// do not abort the whole batch; log the cause
 
-// อัปเดตไฟล์เดิมให้ใช้งานต่อได้:
+// update the existing files so they remain usable:
 
-// เพิ่มผล (success/fail) เข้า 01_mint_results.json
+// append results (success/fail) into 01_mint_results.json
 
-// ปรับ 01_mint_failed.json ให้เหลือเฉพาะใบที่ยัง fail จริง ๆ
+// reduce 01_mint_failed.json to only the items that still genuinely fail

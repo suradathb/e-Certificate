@@ -1,0 +1,149 @@
+{
+  "note": "gasUsed and effectiveGasPrice from receipts; fee=gas*egp in native token. No USD conversion applied.",
+  "gas": [
+    {
+      "run_id": "mint_N100_c3",
+      "network": "L2",
+      "operation": "mint",
+      "N": 100,
+      "gas_median": 161370,
+      "egp_median_wei": 25000000,
+      "fee_median_native_eth": 4.03425e-06
+    },
+    {
+      "run_id": "mint_N500_c3",
+      "network": "L2",
+      "operation": "mint",
+      "N": 500,
+      "gas_median": 161581,
+      "egp_median_wei": 25000000,
+      "fee_median_native_eth": 4.039525e-06
+    },
+    {
+      "run_id": "mint_N1000_c3",
+      "network": "L2",
+      "operation": "mint",
+      "N": 1000,
+      "gas_median": 161587,
+      "egp_median_wei": 25000000,
+      "fee_median_native_eth": 4.039675e-06
+    },
+    {
+      "run_id": "transfer_N100_c3",
+      "network": "L2",
+      "operation": "transfer",
+      "N": 100,
+      "gas_median": 95186,
+      "egp_median_wei": 25000000,
+      "fee_median_native_eth": 2.37965e-06
+    },
+    {
+      "run_id": "transfer_N500_c3",
+      "network": "L2",
+      "operation": "transfer",
+      "N": 500,
+      "gas_median": 104382,
+      "egp_median_wei": 25000000,
+      "fee_median_native_eth": 2.60955e-06
+    },
+    {
+      "run_id": "transfer_N1000_c3",
+      "network": "L2",
+      "operation": "transfer",
+      "N": 1000,
+      "gas_median": 95180,
+      "egp_median_wei": 25000000,
+      "fee_median_native_eth": 2.3795e-06
+    },
+    {
+      "run_id": "block_N100_c3",
+      "network": "L2",
+      "operation": "block",
+      "N": 100,
+      "gas_median": 88997,
+      "egp_median_wei": 25000000,
+      "fee_median_native_eth": 2.224925e-06
+    },
+    {
+      "run_id": "block_N500_c3",
+      "network": "L2",
+      "operation": "block",
+      "N": 500,
+      "gas_median": 96371,
+      "egp_median_wei": 25000000,
+      "fee_median_native_eth": 2.409275e-06
+    },
+    {
+      "run_id": "block_N1000_c3",
+      "network": "L2",
+      "operation": "block",
+      "N": 1000,
+      "gas_median": 88997,
+      "egp_median_wei": 25000000,
+      "fee_median_native_eth": 2.224925e-06
+    },
+    {
+      "run_id": "unblock_N100_c3",
+      "network": "L2",
+      "operation": "unblock",
+      "N": 100,
+      "gas_median": 86519,
+      "egp_median_wei": 25000000,
+      "fee_median_native_eth": 2.162975e-06
+    },
+    {
+      "run_id": "unblock_N500_c3",
+      "network": "L2",
+      "operation": "unblock",
+      "N": 500,
+      "gas_median": 86513,
+      "egp_median_wei": 25000000,
+      "fee_median_native_eth": 2.162825e-06
+    },
+    {
+      "run_id": "unblock_N1000_c3",
+      "network": "L2",
+      "operation": "unblock",
+      "N": 1000,
+      "gas_median": 86519,
+      "egp_median_wei": 25000000,
+      "fee_median_native_eth": 2.162975e-06
+    },
+    {
+      "run_id": "unblock_N100_c3",
+      "network": "L2",
+      "operation": "unblock",
+      "N": 100,
+      "gas_median": 86519,
+      "egp_median_wei": 25000000,
+      "fee_median_native_eth": 2.162975e-06
+    },
+    {
+      "run_id": "mint_N100_c3",
+      "network": "L1",
+      "operation": "mint",
+      "N": 100,
+      "gas_median": 205878,
+      "egp_median_wei": 1065699410,
+      "fee_median_native_eth": 0.00021940406313198
+    },
+    {
+      "run_id": "mint_N500_c3_r1",
+      "network": "L1",
+      "operation": "mint",
+      "N": 500,
+      "gas_median": 205938,
+      "egp_median_wei": 1474302501,
+      "fee_median_native_eth": 0.000303570028588536
+    },
+    {
+      "run_id": "mint_N1000_c3_r1",
+      "network": "L1",
+      "operation": "mint",
+      "N": 1000,
+      "gas_median": 205950,
+      "egp_median_wei": 1405889499,
+      "fee_median_native_eth": 0.000289534506982056
+    }
+  ]
+}

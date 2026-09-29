@@ -20,8 +20,10 @@ const DUMMY_PK =
   "0x0000000000000000000000000000000000000000000000000000000000000001";
 
 function acct(pk?: string): string[] {
-  const v = (pk || "").trim();
-  // accept only a proper 0x + 64 hex; otherwise use dummy (test/compile only)
+  let v = (pk || "").trim();
+  // accept keys with or without a 0x prefix; normalize to 0x + 64 hex.
+  if (/^[0-9a-fA-F]{64}$/.test(v)) v = "0x" + v;         // add missing 0x
+  // otherwise fall back to a well-formed dummy (local compile/test only)
   return [/^0x[0-9a-fA-F]{64}$/.test(v) ? v : DUMMY_PK];
 }
 
@@ -45,17 +47,17 @@ const config: HardhatUserConfig = {
     },
     zkCustom: {
       url: "http://localhost:3050",
-      ethNetwork: "goerli", // local ใช้อะไรก็ได้
+      ethNetwork: "goerli", // arbitrary value for local
       zksync: true,
       accounts: acct(process.env.PRIVATE_KEY),
     },
-    // ✅ เพิ่ม L1 Sepolia โดยตรง
+    // add L1 Sepolia directly
     ethereumSepolia: {
-      url: process.env.ETH_RPC || "", // เช่น Alchemy/Infura URL
+      url: process.env.ETH_RPC || "", // e.g. an RPC provider URL
       chainId: 11155111,
       accounts: acct(process.env.PRIVATE_KEY),
     },
-    // ✅ เพิ่ม BNB Testnet
+    // add BNB Testnet
     bnbTestnet: {
       url: process.env.BNB_RPC || "",
       chainId: 97,

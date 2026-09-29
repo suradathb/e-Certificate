@@ -1,0 +1,29 @@
+# Changed / Added files (STEP 9 + 9B)
+
+## Modified
+scripts/uploadToIPFS.ts        (import fixed, English comments, env-configurable)
+package.json                   (added ipfs-http-client dependency)
+contracts/NFTCowCert_v2.sol    (comments → English; NO logic change)
+scripts/01_mint.ts, 02_transfer.ts, 03_block.ts, 04_unblock.ts, 05_fetch.ts, 06_summary_to_csv.ts (comments/emoji cleanup)
+scripts/01_mint_retry.ts, 02_transfer_retry.ts (comments cleanup)
+scripts/benchmark-final/diagnose.ts (emoji cleanup)
+deploy/deploy_L1.ts, deploy_NFTCowCer_v2.ts (comments cleanup)
+hardhat.config.ts              (comments cleanup)
+README.MD                      (full rewrite: IPFS section, reproduction modes, structure)
+.env.example                   (aligned to all consumed vars; IPFS vars; no secrets)
+CC.tex                         (Table 3 IPFS row; Security § integrity-vs-availability)
+
+## Added
+REPRODUCING.md
+analysis/regenerate_stats_and_figures.py
+analysis/README.md
+analysis/out/ (regenerated_stats.json, fig7_latency.png, fig8_fee.png, fig9_tps.png)
+results/final/ (8 experiments + summaries + SHA256SUMS.txt)
+results/excluded/ (2 pre-bugfix transfer experiments)
+results/README.md
+docs/ipfs/IPFS_IMPLEMENTATION_AUDIT.md
+docs/revision/STEP9_BASELINE.md
+docs/revision/STEP9_MANUSCRIPT_REPO_CONSISTENCY.md
+docs/revision/STEP9_REVIEWER_RESPONSES.md
+audit/ (ENV, CONTRACT_ADDRESS, SECRET_SCAN, GITIGNORE, COMMENT, README_COMMAND, ANALYSIS_REGENERATION, MATRIX, R2-06, R2-13)
+STEP9_AUDIT_PACKAGE/

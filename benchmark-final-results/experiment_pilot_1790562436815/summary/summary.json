@@ -1,0 +1,47 @@
+[
+  {
+    "run_id": "unblock_N100_c3",
+    "N": 100,
+    "concurrency": 3,
+    "final_success": 100,
+    "final_failure": 0,
+    "first_attempt_success": 100,
+    "total_retry_attempts": 0,
+    "batch_duration_ms": 85185,
+    "tps_completed": 1.174,
+    "latency_median_ms": 1868.5670834999764,
+    "latency_p95_ms": 4481.222848250041,
+    "latency_iqr_ms": 983.3576557500346,
+    "latency_max_ms": 6276.5808330000145
+  },
+  {
+    "run_id": "unblock_N500_c3",
+    "N": 500,
+    "concurrency": 3,
+    "final_success": 500,
+    "final_failure": 0,
+    "first_attempt_success": 500,
+    "total_retry_attempts": 0,
+    "batch_duration_ms": 421364,
+    "tps_completed": 1.187,
+    "latency_median_ms": 1869.1317709998693,
+    "latency_p95_ms": 4326.69237294993,
+    "latency_iqr_ms": 1207.3819897500798,
+    "latency_max_ms": 12325.633333000354
+  },
+  {
+    "run_id": "unblock_N1000_c3",
+    "N": 1000,
+    "concurrency": 3,
+    "final_success": 1000,
+    "final_failure": 0,
+    "first_attempt_success": 1000,
+    "total_retry_attempts": 0,
+    "batch_duration_ms": 981898,
+    "tps_completed": 1.018,
+    "latency_median_ms": 2486.6353750005364,
+    "latency_p95_ms": 4787.297258649205,
+    "latency_iqr_ms": 1506.4130007498898,
+    "latency_max_ms": 65384.23187500052
+  }
+]

@@ -17,7 +17,7 @@ contract NFTCowCert is ERC721URIStorage, Ownable {
     struct Cert {
         uint256 id;
         string metadataCID;
-        bool isBlocked; // ✅ ถ้า true จะไม่สามารถโอนได้
+        bool isBlocked; // if true, the certificate cannot be transferred
     }
 
     struct CertIndex {
@@ -77,7 +77,7 @@ contract NFTCowCert is ERC721URIStorage, Ownable {
         bytes32 _cowHash
     ) public onlyAdmin {
         certCount++;
-        certs[certCount] = Cert(certCount, _metadataCID, false); // isBlocked เริ่มต้น false
+        certs[certCount] = Cert(certCount, _metadataCID, false); // isBlocked defaults to false
 
         cowIdToToken[_cowId] = certCount;
         hashToTokens[_cowHash].push(certCount);
@@ -90,27 +90,27 @@ contract NFTCowCert is ERC721URIStorage, Ownable {
         emit CertIssued(certCount, _to, _metadataCID);
     }
 
-    // ✅ บล็อกใบรับรอง ไม่ให้สามารถโอนได้
+    // Block a certificate so it cannot be transferred
     function blockCert(uint256 tokenId) public onlyAdmin {
         require(_existsPublic(tokenId), "Token does not exist");
         certs[tokenId].isBlocked = true;
         emit CertBlocked(tokenId);
     }
 
-    // ✅ ปลดบล็อกใบรับรอง ให้สามารถโอนได้อีกครั้ง
+    // Unblock a certificate so it can be transferred again
     function unblockCert(uint256 tokenId) public onlyAdmin {
         require(_existsPublic(tokenId), "Token does not exist");
         certs[tokenId].isBlocked = false;
         emit CertUnblocked(tokenId);
     }
 
-    // ✅ ตรวจสอบว่าใบรับรองถูกบล็อกหรือไม่
+    // Check whether a certificate is blocked
     function isCertBlocked(uint256 tokenId) public view returns (bool) {
         require(_existsPublic(tokenId), "Token does not exist");
         return certs[tokenId].isBlocked;
     }
 
-    // ✅ แสดงสถานะเจ้าของ/URI/บล็อกหรือไม่
+    // Return owner / URI / blocked status
     function getCertStatus(uint256 tokenId)
         public
         view
@@ -150,7 +150,7 @@ contract NFTCowCert is ERC721URIStorage, Ownable {
         return hashToTokens[_hash];
     }
 
-    // ✅ เพิ่มการป้องกันไม่ให้โอน NFT ถ้าใบรับรองถูกบล็อก
+    // Prevent NFT transfer when the certificate is blocked
     function _beforeTokenTransfer(
         address from,
         address to,

@@ -1,0 +1,30 @@
+STEP 6A FILE MANIFEST
+============================================================
+relative_path | size_bytes | sha256
+------------------------------------------------------------
+src/replay/types.ts | 1899 | 2d5f3ca4c232642ae370bc90419438f116dad519cf31324bc9df6921dce0845c
+src/replay/eventSorter.ts | 596 | b763c1ea99b6f253df8a60e88c07a3b45401d37a83cd8f7412ef4c2f6306f139
+src/replay/reducer.ts | 3022 | 38decfb289fc4d4cd262340134419ed003ce413e21f07c44b7e2cf2416b2ad93
+src/replay/eventDecoder.ts | 2154 | 0ef5488a9edc29e88499f7c1fc2c91f70f89f3a98a8135aaa69e612393c809eb
+src/replay/compareContractState.ts | 1291 | 20d19f6bb402334ba89645e90c3237da6e1dd599ee1d15ed258dfa603d122e7d
+src/replay/reconstructCertificateState.ts | 838 | 41b4855232f6c9485299be540073e1a0b22999c4a5007e7a67893e4d1956658d
+test/replay.reducer.spec.ts | 6187 | 559b721b463df50c75f577f2d994995983c3887e150cde735055131174282a58
+test/replay.integration.spec.ts | 5181 | eec0213b2b0e9c04e462cd8e730f897812a219cf881202fcde9d4ce294c08bb7
+scripts/replay/reconstructCertificateState.ts | 3619 | dd72d71e39d1815f0a02b1dec5e24f9806415428be562e96242910c64e4a8266
+scripts/replay/runScaleConformance.ts | 5516 | 98ded0dda4b3e09e3e955cb5c6efee529767a1d6f8cc20aab74eefbb404fb681
+docs/revision/step6/STEP6_BASELINE.md | 991 | 22256a77fe0a4e0a24caed1a804fe37adbdb7ac1a28f57e099323fb68e5e2ec3
+docs/revision/step6/ARTIFACT_MAPPING.md | 2644 | 7ced7666efbd0e424d863eb1f6593197c8547a8b28175078d7e520ee77f8abd3
+docs/revision/step6/STEP6_RESULTS.md | 2458 | a382034b5840b8efce1ba0845072cea744b18a78c8dfb8c4f8a3f0fc408918b7
+docs/revision/step6/STEP6A_AUDIT_PACKAGE.md | 4374 | 72f1c9438fc82641616498acc8c59b2b6053782c69be95bb287a8aed989b992f
+replay-artifacts/replay_100.json | 633 | 7b69502225b468c68f8712c231c0cedf4345e2949cbb69500013b789209a3d53
+replay-artifacts/replay_500.json | 636 | 13f484d619630edef9f8b91f5838c6f4ee436d957b29247fd8d883cb9841c619
+replay-artifacts/replay_1000.json | 640 | 963d88c4c0fda74c3adebc998ad13d87e279fbde8bbe1e4269432e6f726b1642
+replay-artifacts/replay_summary.csv | 165 | cee85d7af142e775615a85da5d02b0c35eb636d2078a7bae52ab0b9eaaa79121
+package.json | 1256 | 7ab9327d29f3d0349ba959f8a533837cecae1bef98b734a2048d7f253b7583c2
+tsconfig.json | 358 | 124e955ff53ecc9942eb351c7000e602bda1b71bd252fdb9f48aad7bae5f425c
+
+------------------------------------------------------------
+Raw terminal output was not persisted as a file; machine-readable result
+artifacts (replay-artifacts/*.json, *.csv) and result documents
+(docs/revision/step6/STEP6_RESULTS.md, STEP6A_AUDIT_PACKAGE.md) are provided.
+The audit package doc embeds the raw console lines transcribed from the run.

@@ -1,0 +1,110 @@
+{
+  "note": "Source values for BOTH networks preserved; ratios derived from them. Fee=gasUsed*effectiveGasPrice (native wei->ETH). Gas units != monetary cost.",
+  "matched_mint": [
+    {
+      "N": 100,
+      "L1": {
+        "final_success": 100,
+        "final_failure": 0,
+        "batch_duration_ms": 506088.043333,
+        "tps_completed": 0.19759407738902296,
+        "lat_median_ms": 12055.2,
+        "lat_q1_ms": 11690.3,
+        "lat_q3_ms": 23126.0,
+        "lat_p95_ms": 24579.5,
+        "gas_median": 205878,
+        "egp_median_wei": 1065699410,
+        "fee_median_native_eth": 0.00021940406313198
+      },
+      "L2": {
+        "final_success": 100,
+        "final_failure": 0,
+        "batch_duration_ms": 105705.617708,
+        "tps_completed": 0.9460235148167703,
+        "lat_median_ms": 3129.1,
+        "lat_q1_ms": 2583.6,
+        "lat_q3_ms": 3754.6,
+        "lat_p95_ms": 4614.9,
+        "gas_median": 161370,
+        "egp_median_wei": 25000000,
+        "fee_median_native_eth": 4.03425e-06
+      },
+      "ratios": {
+        "latency_median_L1_over_L2": 3.85,
+        "tps_L2_over_L1": 4.79,
+        "gas_L2_over_L1": 0.784,
+        "fee_native_L1_over_L2": 54.4
+      }
+    },
+    {
+      "N": 500,
+      "L1": {
+        "final_success": 500,
+        "final_failure": 0,
+        "batch_duration_ms": 2016953.9690410001,
+        "tps_completed": 0.24789856767912988,
+        "lat_median_ms": 12120.7,
+        "lat_q1_ms": 11509.6,
+        "lat_q3_ms": 12620.8,
+        "lat_p95_ms": 12937.9,
+        "gas_median": 205938,
+        "egp_median_wei": 1474302501,
+        "fee_median_native_eth": 0.000303570028588536
+      },
+      "L2": {
+        "final_success": 500,
+        "final_failure": 0,
+        "batch_duration_ms": 437048.832959,
+        "tps_completed": 1.1440369182885004,
+        "lat_median_ms": 2053.1,
+        "lat_q1_ms": 1855.3,
+        "lat_q3_ms": 3094.0,
+        "lat_p95_ms": 4448.4,
+        "gas_median": 161581,
+        "egp_median_wei": 25000000,
+        "fee_median_native_eth": 4.039525e-06
+      },
+      "ratios": {
+        "latency_median_L1_over_L2": 5.9,
+        "tps_L2_over_L1": 4.61,
+        "gas_L2_over_L1": 0.785,
+        "fee_native_L1_over_L2": 75.1
+      }
+    },
+    {
+      "N": 1000,
+      "L1": {
+        "final_success": 1000,
+        "final_failure": 0,
+        "batch_duration_ms": 4076862.0995,
+        "tps_completed": 0.24528668755380353,
+        "lat_median_ms": 12018.6,
+        "lat_q1_ms": 11449.2,
+        "lat_q3_ms": 12575.9,
+        "lat_p95_ms": 13205.4,
+        "gas_median": 205950,
+        "egp_median_wei": 1405889499,
+        "fee_median_native_eth": 0.000289534506982056
+      },
+      "L2": {
+        "final_success": 1000,
+        "final_failure": 0,
+        "batch_duration_ms": 1024602.9517920001,
+        "tps_completed": 0.9759878187458173,
+        "lat_median_ms": 2798.3,
+        "lat_q1_ms": 1997.9,
+        "lat_q3_ms": 3586.2,
+        "lat_p95_ms": 4845.5,
+        "gas_median": 161587,
+        "egp_median_wei": 25000000,
+        "fee_median_native_eth": 4.039675e-06
+      },
+      "ratios": {
+        "latency_median_L1_over_L2": 4.29,
+        "tps_L2_over_L1": 3.98,
+        "gas_L2_over_L1": 0.785,
+        "fee_native_L1_over_L2": 71.7
+      }
+    }
+  ]
+}

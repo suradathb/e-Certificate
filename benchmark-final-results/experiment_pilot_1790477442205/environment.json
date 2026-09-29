@@ -1,0 +1,20 @@
+{
+  "timestamp_utc": "2026-09-27T02:50:42.586Z",
+  "os": "darwin",
+  "os_version": "25.6.0",
+  "cpu_model": "Apple M1 Pro",
+  "cpu_count": 10,
+  "ram_total_bytes": 17179869184,
+  "node_version": "v22.22.3",
+  "ethers_version": "6.16.0",
+  "hardhat_version": null,
+  "git_commit": null,
+  "git_branch": null,
+  "git_dirty": null,
+  "network": "hardhat",
+  "chain_id": 31337,
+  "rpc_provider_host": "hardhat",
+  "contract_address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  "contract_source_sha256": "1da0348de590f0242f1cb3f5ec88af3126f0613a6c363b39197efa710f46b22b",
+  "runner_sha256": "96398a5cb17c8e2467e0dc54e772bc02432ba8dca83cba27287a3f825ccd9801"
+}

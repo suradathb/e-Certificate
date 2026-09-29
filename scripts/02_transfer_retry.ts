@@ -1,13 +1,13 @@
 // 02_transfer_retry.ts
-// เป้าหมาย (แบบเดียวกับ 01_mint_retry.ts):
-// - อ่าน ./output/500/02_transfer_failed.json
-// - “ลอง transfer ใหม่” เฉพาะใบที่เคย fail
-// - ไม่หยุดทั้งชุด + log สาเหตุ
-// - อัปเดตไฟล์เดิมให้ใช้งานต่อได้
-//   - append ผล (success/fail/skip) เข้า 02_transfer_results.json (master log)
-//   - append ประวัติ retry เข้า 02_transfer_retry_results.json
-//   - append ประวัติ retry fail เข้า 02_transfer_retry_failed.json
-//   - ปรับ 02_transfer_failed.json ให้เหลือเฉพาะใบที่ยัง fail จริง ๆ (backlog รอบถัดไป)
+// Purpose (same pattern as 01_mint_retry.ts):
+// - read ./output/500/02_transfer_failed.json
+// - retry transfer only for previously failed items
+// - do not abort the whole batch; log the cause
+// - update the existing files so they remain usable
+//   - append results (success/fail/skip) into 02_transfer_results.json (master log)
+//   - append retry history into 02_transfer_retry_results.json
+//   - append retry-failure history into 02_transfer_retry_failed.json
+//   - reduce 02_transfer_failed.json to only items that still fail (backlog for next round)
 
 import { ethers } from "ethers";
 import * as fs from "fs";
@@ -60,10 +60,10 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 async function main() {
   ensureDir(OUT_DIR);
 
-  // backlog ที่ต้อง retry (เฉพาะที่ยัง fail)
+  // backlog to retry (only still-failing items)
   const failedItems = safeReadArray(IN_FAIL);
   if (failedItems.length === 0) {
-    console.log("ℹ️ No failed transfer items found. Nothing to retry.");
+    console.log(" No failed transfer items found. Nothing to retry.");
     return;
   }
 
@@ -80,21 +80,21 @@ async function main() {
   const mintTo = (process.env.ADDRESS_SIGN || signer.address).toLowerCase();
   const transferTo = (process.env.TRANSFER_TO || signer.address).toLowerCase();
 
-  // master results (สะสม)
+  // master results (accumulated)
   const transferResults = safeReadArray(IN_RESULTS);
 
-  // retry logs (สะสม ไม่เขียนทับ)
+  // retry logs (accumulated, not overwritten)
   const retryResults = safeReadArray(OUT_RETRY_RESULTS);
   const retryFailedLog = safeReadArray(OUT_RETRY_FAIL);
 
-  // backlog ใหม่สำหรับรอบถัดไป (fresh, ไม่สะสมซ้ำ)
+  // fresh backlog for the next round (not re-accumulated)
   const remainingFailed: any[] = [];
 
-  console.log(`🚀 [02_transfer_retry] retryCount=${failedItems.length}`);
-  console.log(`👤 signer=${signer.address}`);
+  console.log(`[02_transfer_retry] retryCount=${failedItems.length}`);
+  console.log(` signer=${signer.address}`);
   console.log(`from(mintTo)=${mintTo}`);
   console.log(`to(transferTo)=${transferTo}`);
-  console.log(`🔗 contract=${process.env.ZKSYNC_CONTRACT_TEST}`);
+  console.log(` contract=${process.env.ZKSYNC_CONTRACT_TEST}`);
 
   for (let i = 0; i < failedItems.length; i++) {
     const item = failedItems[i];
@@ -109,11 +109,11 @@ async function main() {
     const start = Date.now();
 
     try {
-      // ✅ เช็ค owner ก่อนยิง tx (กันยิงซ้ำ)
+      // check owner before sending tx (avoid duplicate sends)
       const owner = String(await contract.ownerOf(tokenId)).toLowerCase();
 
       if (owner === transferTo) {
-        // เคยโอนสำเร็จแล้วบน chain แต่รอบนั้นอาจบันทึกไม่ทัน
+        // already transferred on-chain, but the prior round may not have recorded it in time
         const end = Date.now();
         const row = {
           cowId,
@@ -130,9 +130,9 @@ async function main() {
         retryResults.push(row);
         transferResults.push(row);
 
-        console.log(`✅ skip: already transferred on-chain`);
+        console.log(` skip: already transferred on-chain`);
       } else if (owner !== mintTo) {
-        // signer โอนให้ไม่ได้ เพราะไม่ใช่ owner (หรือยังไม่ได้รับ approval)
+        // signer cannot transfer because it is not the owner (or lacks approval)
         const end = Date.now();
         const row = {
           cowId,
@@ -148,12 +148,12 @@ async function main() {
 
         retryResults.push(row);
         retryFailedLog.push(row);
-        remainingFailed.push(item); // เก็บ item เดิมไว้ retry รอบหน้า
+        remainingFailed.push(item); // keep the item for the next retry round
         transferResults.push(row);
 
-        console.error(`❌ owner mismatch: ${row.note}`);
+        console.error(` owner mismatch: ${row.note}`);
       } else {
-        // ✅ โอนจริง
+        // perform the actual transfer
         const tx = await contract.safeTransferFrom(mintTo, transferTo, tokenId);
         const rcpt = await tx.wait();
         const end = Date.now();
@@ -175,7 +175,7 @@ async function main() {
         retryResults.push(row);
         transferResults.push(row);
 
-        console.log(`✅ retry transfer success tx=${tx.hash}`);
+        console.log(` retry transfer success tx=${tx.hash}`);
       }
     } catch (err: any) {
       const end = Date.now();
@@ -196,30 +196,30 @@ async function main() {
 
       retryResults.push(row);
       retryFailedLog.push(row);
-      remainingFailed.push(item); // เก็บ item เดิมไว้ retry รอบหน้า
+      remainingFailed.push(item); // keep the item for the next retry round
       transferResults.push(row);
 
-      console.error(`❌ retry transfer failed: ${e.message}`);
+      console.error(` retry transfer failed: ${e.message}`);
     }
 
-    // checkpoint ทุกใบ (กันสคริปต์ดับกลางทาง)
-    safeWriteJSON(OUT_RETRY_RESULTS, retryResults); // ✅ append log (โดยการอ่านของเดิมมาแล้วเขียนรวม)
-    safeWriteJSON(OUT_RETRY_FAIL, retryFailedLog); // ✅ append fail history
-    safeWriteJSON(IN_RESULTS, transferResults);    // ✅ master log สะสม
-    safeWriteJSON(IN_FAIL, remainingFailed);       // ✅ backlog รอบถัดไป (fresh)
+    // checkpoint after each item (guards against mid-run crashes)
+    safeWriteJSON(OUT_RETRY_RESULTS, retryResults); // append log (read existing, then write merged)
+    safeWriteJSON(OUT_RETRY_FAIL, retryFailedLog); //  append fail history
+    safeWriteJSON(IN_RESULTS, transferResults);    // accumulated master log
+    safeWriteJSON(IN_FAIL, remainingFailed);       // backlog for next round (fresh)
 
-    await sleep(250); // กัน RPC rate limit
+    await sleep(250); // throttle to avoid RPC rate limits
   }
 
-  console.log(`\n🎉 [02_transfer_retry] done`);
-  console.log(`📄 retry results (append) -> ${OUT_RETRY_RESULTS}`);
-  console.log(`🧾 retry failed (append)  -> ${OUT_RETRY_FAIL}`);
-  console.log(`🧩 updated transfer results -> ${IN_RESULTS}`);
-  console.log(`🔁 updated failed backlog   -> ${IN_FAIL}`);
+  console.log(`\n [02_transfer_retry] done`);
+  console.log(` retry results (append) -> ${OUT_RETRY_RESULTS}`);
+  console.log(` retry failed (append)  -> ${OUT_RETRY_FAIL}`);
+  console.log(` updated transfer results -> ${IN_RESULTS}`);
+  console.log(` updated failed backlog   -> ${IN_FAIL}`);
 }
 
 main().catch((e) => {
-  console.error("💥 fatal:", e);
+  console.error(" fatal:", e);
   process.exit(1);
 });
 

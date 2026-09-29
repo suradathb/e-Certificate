@@ -1,0 +1,47 @@
+[
+  {
+    "run_id": "transfer_N100_c3",
+    "N": 100,
+    "concurrency": 3,
+    "final_success": 0,
+    "final_failure": 100,
+    "first_attempt_success": 0,
+    "total_retry_attempts": 0,
+    "batch_duration_ms": 13,
+    "tps_completed": 0,
+    "latency_median_ms": null,
+    "latency_p95_ms": null,
+    "latency_iqr_ms": null,
+    "latency_max_ms": null
+  },
+  {
+    "run_id": "transfer_N500_c3",
+    "N": 500,
+    "concurrency": 3,
+    "final_success": 0,
+    "final_failure": 500,
+    "first_attempt_success": 0,
+    "total_retry_attempts": 0,
+    "batch_duration_ms": 35,
+    "tps_completed": 0,
+    "latency_median_ms": null,
+    "latency_p95_ms": null,
+    "latency_iqr_ms": null,
+    "latency_max_ms": null
+  },
+  {
+    "run_id": "transfer_N1000_c3",
+    "N": 1000,
+    "concurrency": 3,
+    "final_success": 0,
+    "final_failure": 1000,
+    "first_attempt_success": 0,
+    "total_retry_attempts": 0,
+    "batch_duration_ms": 56,
+    "tps_completed": 0,
+    "latency_median_ms": null,
+    "latency_p95_ms": null,
+    "latency_iqr_ms": null,
+    "latency_max_ms": null
+  }
+]

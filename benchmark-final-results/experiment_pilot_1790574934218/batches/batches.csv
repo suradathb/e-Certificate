@@ -1,0 +1,2 @@
+experiment_id,run_id,repeat_index,network,chain_id,operation,N,concurrency,batch_start_ms,batch_end_ms,batch_duration_ms,attempted_logical_operations,first_attempt_success,operations_requiring_retry,total_retry_attempts,final_success,final_failure,tps_completed
+pilot_1790574934218,mint_N100_c3,0,ethereumSepolia,11155111,mint,100,3,1361.425042,507449.468375,506088.043333,100,100,0,0,100,0,0.19759407738902296

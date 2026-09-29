@@ -1,0 +1,126 @@
+{
+  "note": "Preserved for provenance. NOT deleted. Excluded from final valid set for the stated reasons.",
+  "excluded_runs": [
+    {
+      "experiment": "experiment_pilot_1790478219977",
+      "run_id": "mint_N5_c4",
+      "operation": "mint",
+      "N": 5,
+      "concurrency": 4,
+      "chain_id": 31337,
+      "final_success": 1,
+      "final_failure": 4,
+      "exclusion_reason": "early pilot/local failure or misconfig; superseded by later valid runs"
+    },
+    {
+      "experiment": "experiment_pilot_1790478376173",
+      "run_id": "mint_N5_c1",
+      "operation": "mint",
+      "N": 5,
+      "concurrency": 1,
+      "chain_id": 300,
+      "final_success": 0,
+      "final_failure": 5,
+      "exclusion_reason": "early pilot/local failure or misconfig; superseded by later valid runs"
+    },
+    {
+      "experiment": "experiment_pilot_1790478376173",
+      "run_id": "mint_N5_c2",
+      "operation": "mint",
+      "N": 5,
+      "concurrency": 2,
+      "chain_id": 300,
+      "final_success": 0,
+      "final_failure": 5,
+      "exclusion_reason": "early pilot/local failure or misconfig; superseded by later valid runs"
+    },
+    {
+      "experiment": "experiment_pilot_1790478376173",
+      "run_id": "mint_N5_c3",
+      "operation": "mint",
+      "N": 5,
+      "concurrency": 3,
+      "chain_id": 300,
+      "final_success": 0,
+      "final_failure": 5,
+      "exclusion_reason": "early pilot/local failure or misconfig; superseded by later valid runs"
+    },
+    {
+      "experiment": "experiment_pilot_1790478830600",
+      "run_id": "mint_N5_c1",
+      "operation": "mint",
+      "N": 5,
+      "concurrency": 1,
+      "chain_id": 300,
+      "final_success": 0,
+      "final_failure": 5,
+      "exclusion_reason": "early pilot/local failure or misconfig; superseded by later valid runs"
+    },
+    {
+      "experiment": "experiment_pilot_1790478830600",
+      "run_id": "mint_N5_c2",
+      "operation": "mint",
+      "N": 5,
+      "concurrency": 2,
+      "chain_id": 300,
+      "final_success": 0,
+      "final_failure": 5,
+      "exclusion_reason": "early pilot/local failure or misconfig; superseded by later valid runs"
+    },
+    {
+      "experiment": "experiment_pilot_1790478830600",
+      "run_id": "mint_N5_c3",
+      "operation": "mint",
+      "N": 5,
+      "concurrency": 3,
+      "chain_id": 300,
+      "final_success": 0,
+      "final_failure": 5,
+      "exclusion_reason": "early pilot/local failure or misconfig; superseded by later valid runs"
+    },
+    {
+      "experiment": "experiment_pilot_1790499507788",
+      "run_id": "transfer_N100_c3",
+      "operation": "transfer",
+      "N": 100,
+      "concurrency": 3,
+      "chain_id": 300,
+      "final_success": 0,
+      "final_failure": 100,
+      "exclusion_reason": "pre-bugfix transfer (safeTransferFrom overload ambiguity + signer undefined) \u2014 all attempts failed; superseded by fixed run 1790514765259"
+    },
+    {
+      "experiment": "experiment_pilot_1790499507788",
+      "run_id": "transfer_N500_c3",
+      "operation": "transfer",
+      "N": 500,
+      "concurrency": 3,
+      "chain_id": 300,
+      "final_success": 0,
+      "final_failure": 500,
+      "exclusion_reason": "pre-bugfix transfer (safeTransferFrom overload ambiguity + signer undefined) \u2014 all attempts failed; superseded by fixed run 1790514765259"
+    },
+    {
+      "experiment": "experiment_pilot_1790499507788",
+      "run_id": "transfer_N1000_c3",
+      "operation": "transfer",
+      "N": 1000,
+      "concurrency": 3,
+      "chain_id": 300,
+      "final_success": 0,
+      "final_failure": 1000,
+      "exclusion_reason": "pre-bugfix transfer (safeTransferFrom overload ambiguity + signer undefined) \u2014 all attempts failed; superseded by fixed run 1790514765259"
+    },
+    {
+      "experiment": "experiment_pilot_1790514046147",
+      "run_id": "transfer_N100_c3",
+      "operation": "transfer",
+      "N": 100,
+      "concurrency": 3,
+      "chain_id": 300,
+      "final_success": 0,
+      "final_failure": 100,
+      "exclusion_reason": "pre-bugfix transfer (safeTransferFrom overload ambiguity + signer undefined) \u2014 all attempts failed; superseded by fixed run 1790514765259"
+    }
+  ]
+}

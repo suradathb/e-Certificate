@@ -1,0 +1,33 @@
+{
+  "experiment_id": "pilot_1790514765259",
+  "mode": "live",
+  "op": "transfer",
+  "Ns": [
+    100,
+    500,
+    1000
+  ],
+  "concurrencyLevels": [
+    3
+  ],
+  "retry": {
+    "max_retries": 3,
+    "backoff": "exponential",
+    "backoff_base_ms": 250,
+    "retryable": [
+      "RPC_TIMEOUT",
+      "RPC_RATE_LIMIT",
+      "RPC_CONNECTION",
+      "NONCE_ERROR",
+      "REPLACEMENT_ERROR",
+      "RECEIPT_TIMEOUT"
+    ],
+    "non_retryable": [
+      "INSUFFICIENT_FUNDS",
+      "GAS_ESTIMATION",
+      "CONTRACT_REVERT",
+      "UNKNOWN"
+    ]
+  },
+  "seedNote": "deterministic cowIds"
+}

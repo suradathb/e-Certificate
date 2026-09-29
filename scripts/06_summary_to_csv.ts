@@ -252,18 +252,18 @@ function main() {
   if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true });
   fs.writeFileSync(OUT_CSV, csv, "utf-8");
 
-  console.log("✅ CSV summary generated:", OUT_CSV);
-  console.log(`ℹ️ rows=${rows.length}`);
-  console.log("ℹ️ sources:", FILES);
+  console.log(" CSV summary generated:", OUT_CSV);
+  console.log(` rows=${rows.length}`);
+  console.log(" sources:", FILES);
 }
 
 main();
 
 // npx ts-node 06_summary_to_csv.ts
 // 06_summary_to_csv.ts
-// เป้าหมาย
+// Purpose
 
-// อ่านผลจากไฟล์:
+// Read results from files:
 
 // ./output/01_mint_results.json
 
@@ -275,8 +275,8 @@ main();
 
 // ./output/05_fetch_results.json
 
-// สรุปเป็น CSV ตารางเดียว: 1 แถวต่อ 1 certificate (cowId/cid/tokenId)
+// Summarize into a single CSV table: one row per certificate (cowId/cid/tokenId)
 
-// มีคอลัมน์ครบทุก step: status/txHash/gasUsed/duration/error
+// includes all step columns: status/txHash/gasUsed/duration/error
 
-// มีคอลัมน์ fetch data: metadataCID/isBlocked/id (ถ้ามี)
+// includes fetch-data columns: metadataCID/isBlocked/id (if present)

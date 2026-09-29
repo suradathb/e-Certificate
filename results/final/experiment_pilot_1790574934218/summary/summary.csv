@@ -1,0 +1,2 @@
+run_id,N,concurrency,final_success,final_failure,first_attempt_success,total_retry_attempts,batch_duration_ms,tps_completed,latency_median_ms,latency_p95_ms,latency_iqr_ms,latency_max_ms
+mint_N100_c3,100,3,100,0,100,0,506088,0.198,12055.153875499993,24579.463952750004,11435.658677000003,25195.991500000004

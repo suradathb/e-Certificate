@@ -1,0 +1,4 @@
+experiment_id,run_id,repeat_index,network,chain_id,operation,N,concurrency,batch_start_ms,batch_end_ms,batch_duration_ms,attempted_logical_operations,first_attempt_success,operations_requiring_retry,total_retry_attempts,final_success,final_failure,tps_completed
+pilot_1790486231138,mint_N5_c1,0,zkSyncTestnet,300,mint,5,1,4355.889875,22692.946625,18337.05675,5,5,0,0,5,0,0.2726718943049571
+pilot_1790486231138,mint_N5_c2,0,zkSyncTestnet,300,mint,5,2,22924.073541,32343.444083,9419.370541999997,5,5,0,0,5,0,0.5308210328604781
+pilot_1790486231138,mint_N5_c3,0,zkSyncTestnet,300,mint,5,3,32602.875166,38495.28975,5892.414584000002,5,5,0,0,5,0,0.8485485752439714

@@ -15,7 +15,12 @@ cache/
 cache-zk/
 artifacts/
 artifacts-zk/
-tmp/
+
+# STEP 6 replay conformance outputs are tracked evidence (kept out of hardhat's artifacts/)
+!replay-artifacts/
+# STEP 7 benchmark outputs are tracked evidence (kept out of hardhat's artifacts/)
+!benchmark-final-results/
+
 
 # --- hardhat / deployments outputs ---
 deployments/
@@ -25,6 +30,17 @@ deployments-zk/
 output/
 file_logs/
 *.log
+
+# --- scratch / generated (regenerable; not tracked) ---
+tmp/
+analysis/out/
+
+# --- published evidence & docs (explicitly TRACKED — do not ignore) ---
+# results/ holds the authoritative frozen evidence used by the paper.
+# audit/ and STEP9_AUDIT_PACKAGE/ hold the reviewer audit artifacts.
+# These are intentionally committed; listed here for reviewer clarity.
+!results/
+!audit/
 
 # --- optional local tooling ---
 .zenflow/

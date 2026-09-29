@@ -1,0 +1,4 @@
+N,Events,Reconstructed,Matches,Mismatches,ConformanceRate,ReplayTimeMs
+100,423,100,100,0,1.0000,321
+500,2068,500,500,0,1.0000,1436
+1000,4176,1000,1000,0,1.0000,2662
