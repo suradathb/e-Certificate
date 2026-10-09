@@ -1,115 +1,56 @@
-พร้อม โค้ดเต็มทุกไฟล์ + คำสั่ง run + ไฟล์ output ที่ได้จากแต่ละขั้น
+Legacy sequential lifecycle scripts (pre-revision; NOT used for the reported results)
 
-หมายเหตุ: ชุดนี้อิง flow บน Ethereum RPC (ethers v6) เหมือน benchmark_NFTCowCert_ETH.ts ของคุณ
+Note: these scripts follow an Ethereum RPC flow (ethers v6). The results reported in the
+manuscript come exclusively from scripts/benchmark-final/benchmark_final.ts (results/final/).
 
-0) เตรียมโปรเจกต์ก่อน (ทำครั้งเดียว)
-0.1 ติดตั้งแพ็กเกจ
+0) One-time setup
+0.1 Install packages
 npm i ethers dotenv
 npm i -D ts-node typescript @types/node
 
-0.2 เตรียมไฟล์ .env
-
-สร้าง .env ที่ root โปรเจกต์:
+0.2 Create .env at the project root:
 
 ETH_RPC=https://YOUR_RPC_URL
 PRIVATE_KEY=0xYOUR_PRIVATE_KEY
 ETH_CONTRACT_TEST=0xYOUR_NFTCOWCERTV2_CONTRACT
 
-# mint จะ mint ไปที่ address นี้ (ถ้าไม่ใส่ จะใช้ signer.address)
+# mint target address (defaults to signer.address if omitted)
 MINT_TO=0xRECIPIENT_ADDRESS
 
-# transfer จะโอนจาก MINT_TO -> TRANSFER_TO (ถ้าไม่ใส่ TRANSFER_TO จะใช้ signer.address)
+# transfer goes MINT_TO -> TRANSFER_TO (defaults to signer.address if TRANSFER_TO is omitted)
 TRANSFER_TO=0xTARGET_ADDRESS
 
-0.3 ตรวจไฟล์ที่ต้องมี
+0.3 Required input files
 
-./output/cid_list.json ✅ (มาจากขั้น IPFS)
+./output/cid_list.json (from the IPFS upload step)
+./artifacts/contracts/NFTCowCert_v2.sol/NFTCowCert.json (ABI)
 
-./artifacts/contracts/NFTCowCert_v2.sol/NFTCowCert.json ✅ (ABI)
-
-รูปแบบไฟล์ output ของแต่ละขั้น
-
-ทุกสคริปต์จะเขียนไฟล์ลง ./output/:
+Output files (written to ./output/):
 
 01_mint_results.json
-
 02_transfer_results.json
-
 03_block_results.json
-
 04_unblock_results.json
-
 05_fetch_results.json
+plus failed_*.json for later inspection/retry
 
-และมี failed_*.json แยกไว้ด้วย เพื่อเอาไปวิเคราะห์/ทำซ้ำภายหลัง
+01_mint.ts  - issue certificates from cid_list.json
+  reads output/cid_list.json; calls issueCert(to, cid, cowId, cowHash);
+  parses Transfer(0x0, to, tokenId) to obtain tokenId; failures are logged without stopping.
+  run: npx ts-node 01_mint.ts
 
-01_mint.ts (Mint/Issue Certificates จาก cid_list.json)
+02_transfer.ts - transfer successfully minted tokens
+  reads output/01_mint_results.json; selects status="success" with tokenId;
+  calls safeTransferFrom(MINT_TO -> TRANSFER_TO, tokenId); failures are logged separately.
+  run: npx ts-node 02_transfer.ts
 
-✅ ทำอะไร:
+03_block.ts - block successfully minted tokens (blockCert(tokenId))
+  run: npx ts-node 03_block.ts
 
-อ่าน output/cid_list.json
+04_unblock.ts - unblock successfully minted tokens
+  run: npx ts-node 04_unblock.ts
 
-เรียก issueCert(to, cid, cowId, cowHash)
+05_fetch.ts - read certs(tokenId) and record metadataCID, isBlocked, id (read latency)
+  run: npx ts-node 05_fetch.ts
 
-parse Transfer(0x0, to, tokenId) เพื่อเอา tokenId จริง
-
-ถ้ารายการใด fail จะไม่หยุด และ log สาเหตุไว้
-
-📄 สร้างไฟล์ 01_mint.ts:
-npx ts-node 01_mint.ts
-
-02_transfer.ts (Transfer เฉพาะรายการที่ mint สำเร็จ)
-
-✅ ทำอะไร:
-
-อ่าน output/01_mint_results.json
-
-เลือกเฉพาะ status="success" และมี tokenId
-
-โอน safeTransferFrom(MINT_TO -> TRANSFER_TO, tokenId)
-
-fail ใบไหนไม่หยุด + log แยก
-
-📄 สร้างไฟล์ 02_transfer.ts:
-npx ts-node 02_transfer.ts
-
-03_block.ts (Block เฉพาะ token ที่ mint สำเร็จ)
-
-✅ ทำอะไร:
-
-อ่าน 01_mint_results.json
-
-สำหรับ tokenId ที่สำเร็จ → เรียก blockCert(tokenId)
-
-📄 สร้างไฟล์ 03_block.ts:
-npx ts-node 03_block.ts
-
-
-04_unblock.ts (Unblock เฉพาะ token ที่ mint สำเร็จ)
-
-📄 สร้างไฟล์ 04_unblock.ts:
-npx ts-node 04_unblock.ts
-
-
-05_fetch.ts (อ่านข้อมูล certs(tokenId) เพื่อเก็บผล read latency)
-
-✅ ทำอะไร:
-
-อ่าน 01_mint_results.json
-
-เรียก certs(tokenId) แล้วบันทึก metadataCID, isBlocked, id
-
-📄 สร้างไฟล์ 05_fetch.ts:
-npx ts-node 05_fetch.ts
-
-สรุปลำดับการใช้งาน (จำง่ายมาก)
-
-npx ts-node 01_mint.ts → ได้ tokenId + log fail
-
-npx ts-node 02_transfer.ts → โอนได้/ไม่ได้แยก log
-
-npx ts-node 03_block.ts
-
-npx ts-node 04_unblock.ts
-
-npx ts-node 05_fetch.ts → อ่านข้อมูลเพื่อวัด read latency
+Execution order: 01_mint -> 02_transfer -> 03_block -> 04_unblock -> 05_fetch

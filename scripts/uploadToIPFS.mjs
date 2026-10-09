@@ -3,16 +3,16 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// ✅ ช่วยจัดการ __dirname แบบ ES Module
+// Resolve __dirname under ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ ใช้ path ตรงนี้ (เหมือนเดิม) เปลี่ยนแปลงได้ตามต้องการ
+// Input/output paths (adjust as needed)
 const inputPath = path.join(__dirname, "../file_logs/TEST-001-B3_5certs.json");
 const outputPath = path.join(__dirname, "../output/cid_list_B3.json");
 const tmpDir = path.join(__dirname, "../tmp");
 
-// ✅ IPFS HTTP API (local)
+// Local IPFS HTTP API
 const IPFS_API = "http://127.0.0.1:5001";
 
 // ---- helpers ----
@@ -48,10 +48,10 @@ async function ipfsAddFile(filename, fileBytes) {
   return parseIpfsAddResponse(text);
 }
 
-// ✅ ฟังก์ชันหลัก
+// Main routine
 async function uploadFiles() {
   if (!fs.existsSync(inputPath)) {
-    throw new Error(`❌ Input file not found: ${inputPath}`);
+    throw new Error(`Input file not found: ${inputPath}`);
   }
 
   ensureDir(tmpDir);
@@ -72,20 +72,20 @@ async function uploadFiles() {
       const cid = await ipfsAddFile(filename, fileContent);
 
       cids.push({ id: i + 1, cowId: cert.cowId, cid });
-      console.log(`✅ Uploaded ${filename}: ${cid}`);
+      console.log(`Uploaded ${filename}: ${cid}`);
     } catch (err) {
-      console.error(`❌ Failed to upload ${filename}`, err?.message || err);
-      // ✅ ไม่หยุดทั้งชุด
+      console.error(`Failed to upload ${filename}`, err?.message || err);
+      // Continue with the remaining files
     }
   }
 
   fs.writeFileSync(outputPath, JSON.stringify(cids, null, 2));
-  console.log("🎉 All metadata uploaded to IPFS successfully.");
+  console.log("All metadata uploaded to IPFS.");
 }
 
-// ✅ เรียกใช้
+// Entry point
 uploadFiles().catch((err) => {
-  console.error("❌ Upload error:", err.message || err);
+  console.error("Upload error:", err.message || err);
 });
 
 
